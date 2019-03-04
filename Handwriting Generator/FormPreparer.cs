@@ -12,6 +12,7 @@ namespace Handwriting_Generator
         private bool generated = false;
         private const int smallImageWidth = 350;
         private const int largeImageWidth = 1500;
+        private const int markerCount = 3; //Don't change
 
         private string path;
         private byte BWThreshold;
@@ -47,83 +48,57 @@ namespace Handwriting_Generator
         }
 
         /// <summary>
-        /// There must be 5 markers
-        /// Returns 5 markers in order: topleft, topright, botleft, botright, fifth
+        /// There must be 3 markers
+        /// Returns 3 markers in order: topleft, topright, botleft
         /// </summary>
         private List<Vector> IdentifyMarkers(List<Vector> markers)
         {
-            //I've already forgot how this thing works. Hopefully there are no bugs
+            if (markers.Count != 3)
+                throw new ArgumentException("There must be 3 markers");
 
-            if (markers.Count != 5)
-            {
-                throw new ArgumentException("invalid marker list");
-            }
+            List<Vector> minVectPair = new List<Vector>();
+            List<Vector> maxVectPair = new List<Vector>();
 
-            //find distances
-            List<Vector> smallestDistVectors = new List<Vector>();
-            List<Vector> largestDistVectors = new List<Vector>();
-            double smallestDist = double.MaxValue;
-            double largestDist = 0;
-            foreach (Vector marker in markers)
+            double minL = double.MaxValue, maxL = -1;
+
+            for (int i = 0; i < 3; i++)
             {
-                foreach (Vector otherMarker in markers)
+                for (int j = i + 1; j < 3; j++)
                 {
-                    if (marker == otherMarker)
-                        continue;
+                    Vector v1 = markers[i];
+                    Vector v2 = markers[j];
 
-                    double dist = (marker - otherMarker).Length;
-                    if (dist < smallestDist) //precise math since only one pair is expected
+                    double length = (v2 - v1).Length;
+
+                    if (minL > length)
                     {
-                        smallestDist = dist;
-                        smallestDistVectors.Clear();
-                        smallestDistVectors.Add(marker);
-                        smallestDistVectors.Add(otherMarker);
+                        minL = length;
+                        minVectPair.Clear();
+                        minVectPair.Add(v1);
+                        minVectPair.Add(v2);
                     }
 
-                    if (Precision.DefBigger(dist, largestDist))
+                    if (maxL < length)
                     {
-                        largestDist = dist;
-                        largestDistVectors.Clear();
-                        if (!largestDistVectors.Contains(marker))
-                            largestDistVectors.Add(marker);
-                        if (!largestDistVectors.Contains(otherMarker))
-                            largestDistVectors.Add(otherMarker);
-                    }
-                    else if (Precision.ApproxEquals(dist, largestDist))
-                    {
-                        if (!largestDistVectors.Contains(marker))
-                            largestDistVectors.Add(marker);
-                        if (!largestDistVectors.Contains(otherMarker))
-                            largestDistVectors.Add(otherMarker);
+                        maxL = length;
+                        maxVectPair.Clear();
+                        maxVectPair.Add(v1);
+                        maxVectPair.Add(v2);
                     }
                 }
             }
 
+            Vector topright = minVectPair.Intersect(maxVectPair).First();
+            maxVectPair.Remove(topright);
+            minVectPair.Remove(topright);
+            Vector topleft = minVectPair.First();
+            Vector botleft = minVectPair.First();
 
-            //identify markers
             List<Vector> result = new List<Vector>();
-            for (int i = 0; i < 5; i++)
-                result.Add(null);
+            result.Add(topleft);
+            result.Add(topright);
+            result.Add(botleft);
 
-            result[0] = smallestDistVectors.Intersect(largestDistVectors).First(); //topleft 
-            result[4] = smallestDistVectors[0] == result[0] ? smallestDistVectors[1] : smallestDistVectors[0]; //fifth
-
-            double refAngle = (result[4] - result[0]).Angle;
-
-            foreach (Vector vector in largestDistVectors)
-            {
-                if (vector == result[4] || vector == result[0])
-                    continue;
-                double angle = (vector - result[0]).Angle;
-                if (Precision.ApproxEquals(angle, refAngle))
-                    result[1] = vector; //topright
-                else if (Precision.ApproxEquals(angle, MathUtils.NormalizeAngle(refAngle + Math.PI / 2)))
-                    result[2] = vector; //botleft
-                else if (Precision.ApproxEquals(angle, MathUtils.NormalizeAngle(refAngle + 0.9959388)))
-                    result[3] = vector; //botright
-            }
-            if (result.Contains(null))
-                return null;
             return result;
         }
 
@@ -173,7 +148,7 @@ namespace Handwriting_Generator
             //Choose biggest areas
             blackAreas.Sort((a, b) => b.Count - a.Count);
 
-            if (blackAreas.Count < 5)
+            if (blackAreas.Count < markerCount)
                 return null;
 
             //Find their centers
@@ -270,3 +245,4 @@ namespace Handwriting_Generator
         }
     }
 }
+
