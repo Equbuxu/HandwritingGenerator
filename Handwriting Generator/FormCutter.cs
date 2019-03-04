@@ -12,12 +12,16 @@ namespace Handwriting_Generator
         private Bitmap form;
         bool done = false;
 
-        const double topLeftX = 153.0 / 3300.0;
-        const double topLeftY = 153.0 / 5100.0;
-        const int matrixW = 15;
-        const int matrixH = 24;
-        const double cellWidth = 200.0 / 3300.0;
-        const double cellHeight = 200.0 / 5100.0;
+        const double realWidth = 165.0; //mm
+        const double realHeight = 250.0; //mm
+
+        const double xOffset1 = 2.5 / realWidth; //first column
+        const double xOffset2 = 57.5 / realWidth; //second column
+        const double xOffset3 = 112.5 / realWidth; //third column
+        const double yOffset = 7.5 / realHeight;
+
+        const double cellWidth = 15.0 / realWidth;
+        const double cellHeight = 15.0 / realHeight;
         const int sampleCount = 3; //the amount of samples of each character
         const int charCount = 24 * 4;
 

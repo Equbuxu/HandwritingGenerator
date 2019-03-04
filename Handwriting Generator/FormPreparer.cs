@@ -89,10 +89,10 @@ namespace Handwriting_Generator
             }
 
             Vector topright = minVectPair.Intersect(maxVectPair).First();
-            maxVectPair.Remove(topright);
             minVectPair.Remove(topright);
             Vector topleft = minVectPair.First();
-            Vector botleft = minVectPair.First();
+            maxVectPair.Remove(topright);
+            Vector botleft = maxVectPair.First();
 
             List<Vector> result = new List<Vector>();
             result.Add(topleft);
@@ -145,6 +145,35 @@ namespace Handwriting_Generator
                 }
             }
 
+            //Filter out clearly non-square areas (like black scan borders)
+            for (int i = blackAreas.Count - 1; i >= 0; i--)
+            {
+                List<Vector> area = blackAreas[i];
+
+                Vector topMost = new Vector(0, double.MaxValue);
+                Vector bottomMost = new Vector(0, double.MinValue);
+                Vector leftMost = new Vector(double.MaxValue, 0);
+                Vector rightMost = new Vector(double.MinValue, 0);
+                foreach (Vector point in area)
+                {
+                    if (point.Y <= topMost.Y)
+                        topMost = point;
+                    if (point.Y >= bottomMost.Y)
+                        bottomMost = point;
+                    if (point.X <= leftMost.X)
+                        leftMost = point;
+                    if (point.X >= rightMost.X)
+                        rightMost = point;
+                }
+                double horDist = (rightMost - leftMost).Length + 1;
+                double verDist = (topMost - bottomMost).Length + 1;
+                double ratio = horDist / verDist;
+                if (ratio > 1)
+                    ratio = 1 / ratio;
+                if (ratio < 0.8) //arbitrary "squareness" parameter
+                    blackAreas.RemoveAt(i);
+            }
+
             //Choose biggest areas
             blackAreas.Sort((a, b) => b.Count - a.Count);
 
@@ -154,7 +183,7 @@ namespace Handwriting_Generator
             //Find their centers
             List<Vector> squareCenters = new List<Vector>();
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < markerCount; i++)
             {
                 double sumX = 0;
                 double sumY = 0;
@@ -189,7 +218,7 @@ namespace Handwriting_Generator
             smallBWForm = BitmapUtils.MakeBlackAndWhite(smallBWForm, BWThreshold);
             smallBWForm.Save("DebugOut/blackwhite.png");
             smallBWForm = BitmapUtils.ExpandWhite(smallBWForm);
-            smallBWForm.Save("DebugOut/Expandede.png");
+            smallBWForm.Save("DebugOut/Expanded.png");
         }
 
         /// <summary>

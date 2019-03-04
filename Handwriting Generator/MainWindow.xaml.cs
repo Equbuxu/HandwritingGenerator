@@ -30,7 +30,7 @@ namespace Handwriting_Generator
             //font.LoadFromForm("Resources/testing/3.jpg");
             FormPreparer generator = new FormPreparer("Resources/testing/0.jpg");
             Bitmap prepared = generator.CreatePrepared();
-            FormCutter cutter = new FormCutter(prepared);
+            /*FormCutter cutter = new FormCutter(prepared);
             List<List<Bitmap>> letters = cutter.Cut();
 
             for (int i = 0; i < letters.Count; i++)
@@ -42,7 +42,7 @@ namespace Handwriting_Generator
                     name++;
                     image.Save("DebugOut/" + i.ToString() + "/" + name.ToString() + ".png");
                 }
-            }
+            }*/
         }
     }
 }
