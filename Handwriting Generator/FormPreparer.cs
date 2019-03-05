@@ -40,8 +40,13 @@ namespace Handwriting_Generator
             List<Vector> identifiedMarkers = IdentifyMarkers(preciseMarkers);
             List<Vector> fullyRescaledMarkers = identifiedMarkers.Select((a) => a * (originalForm.Width / (double)largeImageWidth)).ToList();
             Bitmap fixedOrientationForm = RotateCrop(fullyRescaledMarkers, originalForm);
+
+            //get rid of lines. The value has been found exprementally
+            BitmapUtils.ChangeBrightness(fixedOrientationForm, 1.1);
+            fixedOrientationForm.Save("DebugOut/brightness.png");
+            //fix under/overexposed images
             BitmapUtils.Autocontrast(fixedOrientationForm);
-            fixedOrientationForm.Save("DebugOut/prepared.png");
+            fixedOrientationForm.Save("DebugOut/contrast.png");
             result = fixedOrientationForm;
 
             return result;

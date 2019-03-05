@@ -9,13 +9,6 @@ namespace Handwriting_Generator
 {
     public class Font
     {
-        public void LoadFromForm(string path)
-        {
-        }
 
-        public void LoadFromFile(string path)
-        {
-
-        }
     }
 }

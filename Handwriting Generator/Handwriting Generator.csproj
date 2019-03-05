@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="BitmapUtils.cs" />
     <Compile Include="Font.cs" />
+    <Compile Include="FontCreator.cs" />
     <Compile Include="FormCutter.cs" />
     <Compile Include="FormPreparer.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -104,6 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ToDoList.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

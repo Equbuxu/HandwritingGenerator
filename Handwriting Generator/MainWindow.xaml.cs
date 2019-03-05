@@ -26,23 +26,9 @@ namespace Handwriting_Generator
         {
             InitializeComponent();
 
-            //Font font = new Font();
-            //font.LoadFromForm("Resources/testing/3.jpg");
-            FormPreparer generator = new FormPreparer("Resources/testing/0.jpg");
-            Bitmap prepared = generator.CreatePrepared();
-            /*FormCutter cutter = new FormCutter(prepared);
-            List<List<Bitmap>> letters = cutter.Cut();
-
-            for (int i = 0; i < letters.Count; i++)
-            {
-                Directory.CreateDirectory("DebugOut/" + i.ToString());
-                int name = 0;
-                foreach (Bitmap image in letters[i])
-                {
-                    name++;
-                    image.Save("DebugOut/" + i.ToString() + "/" + name.ToString() + ".png");
-                }
-            }*/
+            FontCreator fontCreator = new FontCreator();
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
+            fontCreator.GetFont();
         }
     }
 }
