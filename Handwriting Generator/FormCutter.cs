@@ -12,14 +12,19 @@ namespace Handwriting_Generator
         private Bitmap form;
         bool done = false;
 
-        const double topLeftX = 153.0 / 3300.0;
-        const double topLeftY = 153.0 / 5100.0;
-        const int matrixW = 15;
-        const int matrixH = 24;
-        const double cellWidth = 200.0 / 3300.0;
-        const double cellHeight = 200.0 / 5100.0;
+        const double realWidth = 165.0; //mm
+        const double realHeight = 255.0; //mm
+
+        //first column offsets
+        const double xOffset = 2.5 / realWidth;
+        const double yOffset = 7.5 / realHeight;
+        const double columnDist = 55.0 / realWidth; //distance between columns
+
+        const double cellWidth = 15.0 / realWidth;
+        const double cellHeight = 15.0 / realHeight;
         const int sampleCount = 3; //the amount of samples of each character
-        const int charCount = 24 * 4;
+        const int rowCount = 16;
+        const int columnCount = 3;
 
         List<List<Bitmap>> result;
 
@@ -35,27 +40,40 @@ namespace Handwriting_Generator
             done = true;
 
             result = new List<List<Bitmap>>();
-            for (int i = 0; i < charCount; i++)
-                result.Add(new List<Bitmap>());
 
-            for (int i = 0; i < matrixW; i++)
+            for (int i = 0; i < columnCount; i++)
             {
-                if (i % 4 == 3) //skip cells with printed labels
-                    continue;
-                for (int j = 0; j < matrixH; j++)
-                {
-                    int characterId = j + (i / 4) * matrixH;
-                    int x = (int)(form.Width * (topLeftX + i * cellWidth));
-                    int y = (int)(form.Height * (topLeftY + j * cellHeight));
-                    int w = (int)(form.Width * cellWidth);
-                    int h = (int)(form.Width * cellWidth);
-                    result[characterId].Add(BitmapUtils.CutOutPiece(form, x, y, w, h));
-                }
+                result.AddRange(CutColumn(i));
             }
 
             return result;
         }
 
+        private List<List<Bitmap>> CutColumn(int index)
+        {
+            double columnXOffset = index * columnDist + xOffset;
+
+            List<List<Bitmap>> images = new List<List<Bitmap>>();
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                images.Add(new List<Bitmap>());
+            }
+
+            int w = (int)(form.Width * cellWidth);
+            int h = (int)(form.Width * cellWidth);
+
+            for (int j = 0; j < rowCount; j++)
+            {
+                for (int i = 0; i < sampleCount; i++)
+                {
+                    int x = (int)((cellWidth * i + columnXOffset) * form.Width);
+                    int y = (int)((cellHeight * j + yOffset) * form.Height);
+                    images[j].Add(BitmapUtils.CutOutPiece(form, x, y, w, h));
+                }
+            }
+            return images;
+        }
 
     }
 }

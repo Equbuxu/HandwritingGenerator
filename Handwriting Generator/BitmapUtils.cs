@@ -68,7 +68,7 @@ namespace Handwriting_Generator
         /// <summary>
         /// Operates on the original image instead of returning new one.
         /// </summary>
-        public static void Autocontrast(Bitmap bitmap)
+        public static void Autocontrast(Bitmap bitmap, double cutoffRatio = 0.0005)
         {
             //Generate histograms
             //bitmap = MakeGrayscale(bitmap);
@@ -92,7 +92,6 @@ namespace Handwriting_Generator
             }
 
             //find cutoff boundaries
-            double cutoffRatio = 0.0005;
             int totalPixels = cumulativeHistogram[255];
             int leftCutoffBoundary = 0;
             for (int i = 0; i < 256; i++)
@@ -146,6 +145,28 @@ namespace Handwriting_Generator
             }
 
             bitmap.UnlockBits(pixels);
+        }
+
+        /// <summary>
+        /// Operates on the original image
+        /// </summary>
+        public static void ChangeBrightness(Bitmap bitmap, double brightness)
+        {
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+
+            unsafe
+            {
+                byte* arr = (byte*)data.Scan0;
+                int channelCount = Bitmap.GetPixelFormatSize(bitmap.PixelFormat) / 8;
+                for (int i = 0; i < bitmap.Width * bitmap.Height * channelCount; i += channelCount)
+                {
+                    arr[i] = (byte)MathUtils.Constrain((int)(arr[i] * brightness), 0, 255);
+                    arr[i + 1] = (byte)MathUtils.Constrain((int)(arr[i + 1] * brightness), 0, 255);
+                    arr[i + 2] = (byte)MathUtils.Constrain((int)(arr[i + 2] * brightness), 0, 255);
+                }
+            }
+
+            bitmap.UnlockBits(data);
         }
 
         public static int GetGrayscale(Color c)
