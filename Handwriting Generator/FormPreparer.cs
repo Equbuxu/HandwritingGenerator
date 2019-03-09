@@ -46,10 +46,11 @@ namespace Handwriting_Generator
             fixedOrientationForm.Save("DebugOut/brightness.png");
             //fix under/overexposed images
             BitmapUtils.Autocontrast(fixedOrientationForm);
-            fixedOrientationForm.Save("DebugOut/contrast.png");
-            result = fixedOrientationForm;
+            Bitmap final = BitmapUtils.MakeGrayscale(fixedOrientationForm);
+            final.Save("DebugOut/final.png");
+            result = final;
 
-            return result;
+            return final;
         }
 
         /// <summary>

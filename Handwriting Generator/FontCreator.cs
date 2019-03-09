@@ -15,6 +15,8 @@ namespace Handwriting_Generator
     public class FontCreator
     {
         private Dictionary<fChar, List<Bitmap>> images = new Dictionary<fChar, List<Bitmap>>();
+        public Dictionary<fChar, List<double>> leftMargins = new Dictionary<fChar, List<double>>();
+        public Dictionary<fChar, List<double>> rightMargins = new Dictionary<fChar, List<double>>();
 
         List<fChar[]> formTranslationTables = new List<fChar[]>();
         List<double> lineHeights = new List<double>(); //from the top
@@ -24,10 +26,14 @@ namespace Handwriting_Generator
         private const int standartLetterPixelW = 220;
         private const int standartLetterPixelH = 440;
 
+        private const double standartLetterCmW = 1.5;
+        private const double standartLetterCmH = 3;
+
         public FontCreator()
         {
             formTranslationTables.Add(new fChar[48]
-            {            fChar.rus_1_cap,fChar.rus_2_cap,fChar.rus_3_cap,fChar.rus_4_cap,fChar.rus_5_cap,fChar.rus_6_cap,fChar.rus_7_cap,fChar.rus_8_cap,
+            {
+            fChar.rus_1_cap,fChar.rus_2_cap,fChar.rus_3_cap,fChar.rus_4_cap,fChar.rus_5_cap,fChar.rus_6_cap,fChar.rus_7_cap,fChar.rus_8_cap,
             fChar.rus_9_cap,fChar.rus_10_cap,fChar.rus_11_cap,fChar.rus_12_cap,fChar.rus_13_cap,fChar.rus_14_cap,fChar.rus_15_cap,fChar.rus_16_cap,
 
             fChar.rus_17_cap,fChar.rus_18_cap,fChar.rus_19_cap,fChar.rus_20_cap,fChar.rus_21_cap,fChar.rus_22_cap,fChar.rus_23_cap,fChar.rus_24_cap,
@@ -98,11 +104,83 @@ namespace Handwriting_Generator
 
             for (int i = 0; i < letters.Count; i++)
             {
+                //add images of a letter
                 fChar key = formTranslationTables[formType][i];
                 if (!images.ContainsKey(key))
                     images.Add(key, new List<Bitmap>());
                 images[key].AddRange(letters[i]);
+
+                //add offsets
+                if (!leftMargins.ContainsKey(key))
+                    leftMargins.Add(key, new List<double>());
+
+                if (!rightMargins.ContainsKey(key))
+                    rightMargins.Add(key, new List<double>());
+
+                for (int j = 0; j < letters[i].Count; j++)
+                {
+                    double leftMargin = FindLeftMargin(letters[i][j]);
+                    double rightMargin = FindRightMargin(letters[i][j]);
+                    leftMargins[key].Add(leftMargin);
+                    rightMargins[key].Add(rightMargin);
+                }
             }
+        }
+
+        private double FindLeftMargin(Bitmap image)
+        {
+            Bitmap downscaled = BitmapUtils.Resize(image, 80, 80);
+            BitmapData data = downscaled.LockBits(new Rectangle(0, 0, downscaled.Width, downscaled.Height), ImageLockMode.ReadWrite, downscaled.PixelFormat);
+            int pixelMargin = -1;
+            unsafe
+            {
+                byte* arr = (byte*)data.Scan0;
+                int channelCount = Bitmap.GetPixelFormatSize(downscaled.PixelFormat) / 8;
+                for (int i = 0; i < downscaled.Width; i++)
+                {
+                    for (int j = 0; j < downscaled.Height; j++)
+                    {
+                        int pos = j * downscaled.Width * channelCount + i * channelCount;
+                        if (BitmapUtils.GetGrayscale(arr[pos], arr[pos + 1], arr[pos + 2]) < 15 && arr[pos + 3] > 240)
+                        {
+                            pixelMargin = i;
+                            goto loopend;
+                        }
+                    }
+                }
+            loopend:;
+            }
+            downscaled.UnlockBits(data);
+            double cmMargin = (pixelMargin * standartLetterPixelW / downscaled.Width) * standartLetterCmW / standartLetterPixelW;
+            return cmMargin;
+        }
+
+        private double FindRightMargin(Bitmap image)
+        {
+            Bitmap downscaled = BitmapUtils.Resize(image, 80, 80);
+            BitmapData data = downscaled.LockBits(new Rectangle(0, 0, downscaled.Width, downscaled.Height), ImageLockMode.ReadWrite, downscaled.PixelFormat);
+            int pixelMargin = -1;
+            unsafe
+            {
+                byte* arr = (byte*)data.Scan0;
+                int channelCount = Bitmap.GetPixelFormatSize(downscaled.PixelFormat) / 8;
+                for (int i = downscaled.Width - 1; i >= 0; i--)
+                {
+                    for (int j = 0; j < downscaled.Height; j++)
+                    {
+                        int pos = j * downscaled.Width * channelCount + i * channelCount;
+                        if (BitmapUtils.GetGrayscale(arr[pos], arr[pos + 1], arr[pos + 2]) < 15 && arr[pos + 3] > 240)
+                        {
+                            pixelMargin = i;
+                            goto loopend;
+                        }
+                    }
+                }
+            loopend:;
+            }
+            downscaled.UnlockBits(data);
+            double cmMargin = (pixelMargin * standartLetterPixelW / downscaled.Width) * standartLetterCmW / standartLetterPixelW;
+            return cmMargin;
         }
 
         private Bitmap PrepareLetterImage(Bitmap image, int formType)
@@ -149,7 +227,7 @@ namespace Handwriting_Generator
 
         public Font GetFont()
         {
-            return new Font(images);
+            return new Font(images, leftMargins, rightMargins);
         }
     }
 }
