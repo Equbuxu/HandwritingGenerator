@@ -26,12 +26,12 @@ namespace Handwriting_Generator
         {
             InitializeComponent();
 
-            /*FontCreator fontCreator = new FontCreator();
+            FontCreator fontCreator = new FontCreator();
             fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");*/
-            //Font font = fontCreator.GetFont();
-            Font font = new Font("debugOut/savedFont.zip");
-            font.Save("DebugOut/savedFont1.zip");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
+            Font font = fontCreator.GetFont();
+            //Font font = new Font("debugOut/savedFont.zip");
+            font.Save("DebugOut/savedFont2.zip");
         }
     }
 }

@@ -11,16 +11,16 @@ namespace Handwriting_Generator
 {
     public class Font
     {
-        public Dictionary<string, List<Bitmap>> images;
+        public Dictionary<fChar, List<Bitmap>> images;
 
-        public Font(Dictionary<string, List<Bitmap>> images)
+        public Font(Dictionary<fChar, List<Bitmap>> images)
         {
             this.images = images;
         }
 
         public Font(string path)
         {
-            images = new Dictionary<string, List<Bitmap>>();
+            images = new Dictionary<fChar, List<Bitmap>>();
             Load(path);
         }
 
@@ -36,7 +36,7 @@ namespace Handwriting_Generator
 
             foreach (string folder in folders)
             {
-                string key = Path.GetFileName(folder);
+                fChar key = (fChar)int.Parse(Path.GetFileName(folder));
                 List<Bitmap> value = new List<Bitmap>();
                 string[] imagePaths = Directory.GetFiles(folder);
                 foreach (string imagePath in imagePaths)
@@ -61,13 +61,13 @@ namespace Handwriting_Generator
                 Directory.Delete("TempFontStorage", true);
 
             Directory.CreateDirectory("TempFontStorage");
-            foreach (KeyValuePair<string, List<Bitmap>> bitmaps in images)
+            foreach (KeyValuePair<fChar, List<Bitmap>> bitmaps in images)
             {
                 int i = 0;
-                Directory.CreateDirectory("TempFontStorage/" + bitmaps.Key);
+                Directory.CreateDirectory("TempFontStorage/" + (int)bitmaps.Key);
                 foreach (Bitmap image in bitmaps.Value)
                 {
-                    image.Save("TempFontStorage/" + bitmaps.Key + "/" + i.ToString() + ".png");
+                    image.Save("TempFontStorage/" + (int)bitmaps.Key + "/" + i.ToString() + ".png");
                     i++;
                 }
             }
