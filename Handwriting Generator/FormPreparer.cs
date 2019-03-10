@@ -15,7 +15,7 @@ namespace Handwriting_Generator
         private const int markerCount = 3; //Don't change
 
         private string path;
-        private byte BWThreshold;
+        private int BWThreshold;
         private Bitmap originalForm;
         private Bitmap smallBWForm;
         private Bitmap largeForm;
@@ -220,8 +220,7 @@ namespace Handwriting_Generator
 
         private void CreateSmallExpandedBW(Bitmap smallForm)
         {
-            smallBWForm = BitmapUtils.MakeGrayscale(smallForm);
-            smallBWForm = BitmapUtils.MakeBlackAndWhite(smallBWForm, BWThreshold);
+            smallBWForm = BitmapUtils.MakeBlackAndWhite(smallForm, BWThreshold);
             smallBWForm.Save("DebugOut/blackwhite.png");
             smallBWForm = BitmapUtils.ExpandWhite(smallBWForm);
             smallBWForm.Save("DebugOut/Expanded.png");
@@ -256,7 +255,7 @@ namespace Handwriting_Generator
         /// <summary>
         /// Fills result list with points belonging to the component
         /// </summary>
-        private static void TraverseConnectedComponentDFS(List<Vector> result, Bitmap map, Bitmap visited, int x, int y, byte threshold)
+        private static void TraverseConnectedComponentDFS(List<Vector> result, Bitmap map, Bitmap visited, int x, int y, int threshold)
         {
             if (x < 0 || x >= map.Width || y < 0 || y >= map.Height || IsVisited(visited, x, y) || !BitmapUtils.IsBelowThreshold(map, x, y, threshold))
                 return;

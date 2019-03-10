@@ -1,7 +1,5 @@
-﻿refactor everything to use full color (there should be no functions that assume grayscale image)
-refactor everything to use GetGrayscale
-use int instead if byte everywhere
-rewrite getminmaxmiddlecolorthreshold to use cum. hist algorith
-mind the possible exceptions
+﻿mind the possible exceptions
 ignore empty keys in form translation tables
-//refactor code translation tables to seperate data and logic
+fix image format ambiguity
+copy instead of throwing a reference
+refactor constants

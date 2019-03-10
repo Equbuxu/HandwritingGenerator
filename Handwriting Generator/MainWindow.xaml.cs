@@ -31,17 +31,11 @@ namespace Handwriting_Generator
             font.Save("DebugOut/savedFont.zip");
         }
 
-        public MainWindow()
+        private void GenerateText()
         {
-            InitializeComponent();
-
-            //CreateFont();
-
             Font font = new Font("DebugOut/savedFont.zip");
 
             TextConverter textConverter = new TextConverter("На днях компания Microsoft открыла исходный код калькулятора. Это приложение входило во все версии операционной системы Windows. Исходный код разных проектов Microsoft достаточно часто открывался за последние годы, но новость о калькуляторе в первый же день просочилась даже в нетехнологические средства массовой информации. Что ж, это популярная, но очень маленькая программа на языке C++, тем не менее, статический анализ кода с помощью PVS-Studio выявил подозрительные места в коде.");
-
-
             TextRenderer renderer = new TextRenderer(textConverter.Convert(), new List<Sheet>() { Sheet.LeftLinedSheet() }, font);
 
             int i = 0;
@@ -53,6 +47,14 @@ namespace Handwriting_Generator
                 page.Save("DebugOut/page" + i + ".png");
                 i++;
             }
+        }
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            //CreateFont();
+            GenerateText();
         }
     }
 }
