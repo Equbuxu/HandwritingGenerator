@@ -53,8 +53,8 @@ namespace Handwriting_Generator
         {
             InitializeComponent();
 
-            //CreateFont();
-            GenerateText();
+            CreateFont();
+            //GenerateText();
         }
     }
 }

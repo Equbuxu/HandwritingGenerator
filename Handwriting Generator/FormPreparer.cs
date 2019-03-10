@@ -209,7 +209,7 @@ namespace Handwriting_Generator
 
         private void PrepareData()
         {
-            originalForm = new Bitmap(path);
+            originalForm = BitmapUtils.LoadBitmap(path);
 
             Bitmap smallForm = BitmapUtils.Resize(originalForm, smallImageWidth, originalForm.Height * smallImageWidth / originalForm.Width);
             BWThreshold = BitmapUtils.GetMinMaxMiddleColorThreshold(smallForm);

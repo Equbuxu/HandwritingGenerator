@@ -10,6 +10,20 @@ namespace Handwriting_Generator
 {
     static class BitmapUtils
     {
+        public static Bitmap LoadBitmap(string path)
+        {
+            Bitmap bitmap = new Bitmap(path);
+            if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            {
+                Bitmap newBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
+                using (Graphics gr = Graphics.FromImage(newBitmap))
+                    gr.DrawImage(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
+                bitmap.Dispose();
+                return newBitmap;
+            }
+            return bitmap;
+        }
+
         public static Bitmap MakeGrayscale(Bitmap bitmap)
         {
             Bitmap newBitmap = new Bitmap(bitmap.Width, bitmap.Height, bitmap.PixelFormat);
@@ -20,26 +34,11 @@ namespace Handwriting_Generator
                 byte* arr = (byte*)pixels.Scan0;
                 byte* newArr = (byte*)newPixels.Scan0;
                 int pixelSize = Bitmap.GetPixelFormatSize(bitmap.PixelFormat) / 8;
-                if (pixelSize == 4)
+                for (int i = 0; i < bitmap.Height * bitmap.Width * pixelSize; i += pixelSize)
                 {
-                    for (int i = 0; i < bitmap.Height * bitmap.Width * pixelSize; i += pixelSize)
-                    {
-                        byte avg = arr[i + 3] == 0 ? (byte)255 : (byte)GetGrayscale(arr[i], arr[i + 1], arr[i + 2]);
-                        newArr[i] = newArr[i + 1] = newArr[i + 2] = avg;
-                        newArr[i + 3] = 255; //ignore alpha
-                    }
-                }
-                else if (pixelSize == 3)
-                {
-                    for (int i = 0; i < bitmap.Height * bitmap.Width * pixelSize; i += pixelSize)
-                    {
-                        byte avg = (byte)GetGrayscale(arr[i], arr[i + 1], arr[i + 2]);
-                        newArr[i] = newArr[i + 1] = newArr[i + 2] = avg;
-                    }
-                }
-                else
-                {
-                    throw new Exception("Weird image format"); //TODO write this code properly
+                    byte avg = arr[i + 3] == 0 ? (byte)255 : (byte)GetGrayscale(arr[i], arr[i + 1], arr[i + 2]);
+                    newArr[i] = newArr[i + 1] = newArr[i + 2] = avg;
+                    newArr[i + 3] = 255; //ignore alpha
                 }
             }
 

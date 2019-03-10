@@ -1,5 +1,5 @@
 ﻿mind the possible exceptions
 ignore empty keys in form translation tables
-fix image format ambiguity
 copy instead of throwing a reference
 refactor constants
+dispose bitmaps 
