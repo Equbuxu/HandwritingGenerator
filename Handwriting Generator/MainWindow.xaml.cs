@@ -22,16 +22,36 @@ namespace Handwriting_Generator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private void CreateFont()
+        {
+            FontCreator fontCreator = new FontCreator();
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
+            Font font = fontCreator.GetFont();
+            font.Save("DebugOut/savedFont.zip");
+        }
+
         public MainWindow()
         {
             InitializeComponent();
 
-            /*FontCreator fontCreator = new FontCreator();
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");*/
-            //Font font = fontCreator.GetFont();
-            Font font = new Font("debugOut/savedFont.zip");
-            font.Save("DebugOut/savedFont1.zip");
+            //CreateFont();
+            Font font = new Font("DebugOut/savedFont.zip");
+
+            TextConverter textConverter = new TextConverter("На днях компания Microsoft открыла исходный код калькулятора. Это приложение входило во все версии операционной системы Windows. Исходный код разных проектов Microsoft достаточно часто открывался за последние годы, но новость о калькуляторе в первый же день просочилась даже в нетехнологические средства массовой информации. Что ж, это популярная, но очень маленькая программа на языке C++, тем не менее, статический анализ кода с помощью PVS-Studio выявил подозрительные места в коде.");
+
+
+            TextRenderer renderer = new TextRenderer(textConverter.Convert(), new List<Sheet>() { Sheet.LeftLinedSheet() }, font);
+
+            int i = 0;
+            while (true)
+            {
+                Bitmap page = renderer.GetPage(i);
+                if (page == null)
+                    break;
+                page.Save("DebugOut/page" + i + ".png");
+                i++;
+            }
         }
     }
 }

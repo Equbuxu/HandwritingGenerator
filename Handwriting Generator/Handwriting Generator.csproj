@@ -63,6 +63,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Precision.cs" />
+    <Compile Include="Sheet.cs" />
+    <Compile Include="TextConverter.cs" />
+    <Compile Include="TextRenderer.cs" />
+    <Compile Include="Vector.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -72,6 +77,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BitmapUtils.cs" />
+    <Compile Include="FChar.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontCreator.cs" />
     <Compile Include="FormCutter.cs" />
