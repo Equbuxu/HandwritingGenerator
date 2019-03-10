@@ -138,7 +138,7 @@ namespace Handwriting_Generator
 
         private FChar ConvertToFChar(char character)
         {
-            if (conversionTable.ContainsKey(character) && character != ',')
+            if (conversionTable.ContainsKey(character))
                 return conversionTable[character];
             return FChar.space;
         }
