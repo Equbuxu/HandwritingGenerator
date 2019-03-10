@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Handwriting_Generator
 {
-    public enum fChar
+    public enum FChar
     {
         rus_1,
         rus_2,
@@ -103,16 +103,14 @@ namespace Handwriting_Generator
         percent,
         tilde,
         underscore,
+
+
+        //special (no image)
         space,
         nextline,
+        tab,
+        linebreak, //allows word wrapping
 
-        color_blue,
-        color_green,
-        color_red,
-        color_black,
-
-        align_left,
-        align_right,
         align_center,
     }
 }

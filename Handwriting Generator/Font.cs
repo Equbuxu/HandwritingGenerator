@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,11 +14,24 @@ namespace Handwriting_Generator
 {
     public class Font
     {
-        public Dictionary<fChar, List<Bitmap>> images;
-        public Dictionary<fChar, List<double>> leftMargins;
-        public Dictionary<fChar, List<double>> rightMargins;
+        public Dictionary<FChar, List<Bitmap>> images;
+        public Dictionary<FChar, List<double>> leftMargins;
+        public Dictionary<FChar, List<double>> rightMargins;
 
-        public Font(Dictionary<fChar, List<Bitmap>> images, Dictionary<fChar, List<double>> leftMargins, Dictionary<fChar, List<double>> rightMargins)
+        public const int imagePixelW = 220;
+        public const int imagePixelH = 440;
+
+        public const double imageCmW = 1.5;
+        public const double imageCmH = 3;
+        public const double lineHeight = 1.5;
+
+        public const double pixelsPerCmH = imagePixelW / imageCmW;
+        public const double pixelsPerCmV = imagePixelH / imageCmH;
+
+        public const double cmPerPixelH = imageCmW / imagePixelW;
+        public const double cmPerPixelV = imageCmH / imagePixelH;
+
+        public Font(Dictionary<FChar, List<Bitmap>> images, Dictionary<FChar, List<double>> leftMargins, Dictionary<FChar, List<double>> rightMargins)
         {
             this.images = images;
             this.leftMargins = leftMargins;
@@ -26,7 +40,7 @@ namespace Handwriting_Generator
 
         public Font(string path)
         {
-            images = new Dictionary<fChar, List<Bitmap>>();
+            images = new Dictionary<FChar, List<Bitmap>>();
             Load(path);
         }
 
@@ -46,7 +60,7 @@ namespace Handwriting_Generator
 
             foreach (string folder in folders)
             {
-                fChar key = (fChar)int.Parse(Path.GetFileName(folder));
+                FChar key = (FChar)int.Parse(Path.GetFileName(folder));
                 List<Bitmap> value = new List<Bitmap>();
                 string[] imagePaths = Directory.GetFiles(folder);
                 foreach (string imagePath in imagePaths)
@@ -64,23 +78,23 @@ namespace Handwriting_Generator
             //Load margins
             XElement file = XElement.Load("TempFontStorage/margins.xml");
             var leftPairs = file.Descendants().Where((x) => x.Name == "leftMargins").First().Descendants().Where((elem) => elem.Name == "pair");
-            leftMargins = new Dictionary<fChar, List<double>>();
+            leftMargins = new Dictionary<FChar, List<double>>();
             foreach (XElement pair in leftPairs)
             {
-                fChar key = (fChar)Enum.Parse(typeof(fChar), pair.Attribute("key").Value);
+                FChar key = (FChar)Enum.Parse(typeof(FChar), pair.Attribute("key").Value);
                 if (!leftMargins.ContainsKey(key))
                     leftMargins.Add(key, new List<double>());
-                leftMargins[key].AddRange(pair.Descendants().Select((item) => double.Parse(item.Attribute("value").Value)));
+                leftMargins[key].AddRange(pair.Descendants().Select((item) => double.Parse(item.Attribute("value").Value, CultureInfo.InvariantCulture)));
             }
 
             var rightPairs = file.Descendants().Where((x) => x.Name == "rightMargins").First().Descendants().Where((elem) => elem.Name == "pair");
-            rightMargins = new Dictionary<fChar, List<double>>();
+            rightMargins = new Dictionary<FChar, List<double>>();
             foreach (XElement pair in rightPairs)
             {
-                fChar key = (fChar)Enum.Parse(typeof(fChar), pair.Attribute("key").Value);
+                FChar key = (FChar)Enum.Parse(typeof(FChar), pair.Attribute("key").Value);
                 if (!rightMargins.ContainsKey(key))
                     rightMargins.Add(key, new List<double>());
-                rightMargins[key].AddRange(pair.Descendants().Select((item) => double.Parse(item.Attribute("value").Value)));
+                rightMargins[key].AddRange(pair.Descendants().Select((item) => double.Parse(item.Attribute("value").Value, CultureInfo.InvariantCulture)));
             }
 
             //Delete temp directory
@@ -99,7 +113,7 @@ namespace Handwriting_Generator
             Directory.CreateDirectory("TempFontStorage");
 
             //Save images
-            foreach (KeyValuePair<fChar, List<Bitmap>> bitmaps in images)
+            foreach (KeyValuePair<FChar, List<Bitmap>> bitmaps in images)
             {
                 int i = 0;
                 Directory.CreateDirectory("TempFontStorage/" + (int)bitmaps.Key);

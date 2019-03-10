@@ -31,16 +31,25 @@ namespace Handwriting_Generator
             fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
             Font font = fontCreator.GetFont();*/
             Font font = new Font("DebugOut/savedFont.zip");
-            font.Save("DebugOut/savedFont.zip");
+            //font.Save("DebugOut/savedFont.zip");
 
-            List<fChar> text = new List<fChar>()
+            List<FChar> text = new List<FChar>()
             {
-                fChar.rus_17_cap,
-                fChar.rus_18,
-                fChar.rus_10,
-                fChar.rus_3,
-                fChar.rus_6,
-                fChar.rus_20,
+                FChar.rus_17_cap,
+                FChar.rus_18,
+                FChar.rus_10,
+                FChar.rus_3,
+                FChar.rus_6,
+                FChar.rus_20,
+                FChar.align_center,
+                FChar.rus_1,
+                FChar.rus_2,
+                FChar.nextline,
+                FChar.rus_3,
+                FChar.align_center,
+                FChar.nextline,
+                FChar.rus_5,
+                FChar.rus_33_cap,
             };
 
             TextRenderer renderer = new TextRenderer(text, new List<Sheet>() { Sheet.LeftLinedSheet() }, font);

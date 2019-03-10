@@ -14,45 +14,39 @@ namespace Handwriting_Generator
     /// </summary>
     public class FontCreator
     {
-        private Dictionary<fChar, List<Bitmap>> images = new Dictionary<fChar, List<Bitmap>>();
-        public Dictionary<fChar, List<double>> leftMargins = new Dictionary<fChar, List<double>>();
-        public Dictionary<fChar, List<double>> rightMargins = new Dictionary<fChar, List<double>>();
+        private Dictionary<FChar, List<Bitmap>> images = new Dictionary<FChar, List<Bitmap>>();
+        public Dictionary<FChar, List<double>> leftMargins = new Dictionary<FChar, List<double>>();
+        public Dictionary<FChar, List<double>> rightMargins = new Dictionary<FChar, List<double>>();
 
-        List<fChar[]> formTranslationTables = new List<fChar[]>();
+        List<FChar[]> formTranslationTables = new List<FChar[]>();
         List<double> lineHeights = new List<double>(); //from the top
 
         private const double borderCutThickness = 13.0 / 235.0;
 
-        private const int standartLetterPixelW = 220;
-        private const int standartLetterPixelH = 440;
-
-        private const double standartLetterCmW = 1.5;
-        private const double standartLetterCmH = 3;
-
         public FontCreator()
         {
-            formTranslationTables.Add(new fChar[48]
+            formTranslationTables.Add(new FChar[48]
             {
-            fChar.rus_1_cap,fChar.rus_2_cap,fChar.rus_3_cap,fChar.rus_4_cap,fChar.rus_5_cap,fChar.rus_6_cap,fChar.rus_7_cap,fChar.rus_8_cap,
-            fChar.rus_9_cap,fChar.rus_10_cap,fChar.rus_11_cap,fChar.rus_12_cap,fChar.rus_13_cap,fChar.rus_14_cap,fChar.rus_15_cap,fChar.rus_16_cap,
+            FChar.rus_1_cap,FChar.rus_2_cap,FChar.rus_3_cap,FChar.rus_4_cap,FChar.rus_5_cap,FChar.rus_6_cap,FChar.rus_7_cap,FChar.rus_8_cap,
+            FChar.rus_9_cap,FChar.rus_10_cap,FChar.rus_11_cap,FChar.rus_12_cap,FChar.rus_13_cap,FChar.rus_14_cap,FChar.rus_15_cap,FChar.rus_16_cap,
 
-            fChar.rus_17_cap,fChar.rus_18_cap,fChar.rus_19_cap,fChar.rus_20_cap,fChar.rus_21_cap,fChar.rus_22_cap,fChar.rus_23_cap,fChar.rus_24_cap,
-            fChar.rus_25_cap,fChar.rus_26_cap,fChar.rus_27_cap,fChar.rus_28_cap,fChar.rus_29_cap,fChar.rus_30_cap,fChar.rus_31_cap,fChar.rus_32_cap,
+            FChar.rus_17_cap,FChar.rus_18_cap,FChar.rus_19_cap,FChar.rus_20_cap,FChar.rus_21_cap,FChar.rus_22_cap,FChar.rus_23_cap,FChar.rus_24_cap,
+            FChar.rus_25_cap,FChar.rus_26_cap,FChar.rus_27_cap,FChar.rus_28_cap,FChar.rus_29_cap,FChar.rus_30_cap,FChar.rus_31_cap,FChar.rus_32_cap,
 
-            fChar.rus_33_cap,fChar.period,fChar.exclamation_mark,fChar.question_mark,fChar.number,fChar.lower_quote,fChar.upper_quote,fChar.minus,
-            fChar.plus,fChar.equals,fChar.slash,fChar.open_parenthesis,fChar.close_parenthesis,fChar.semicolon,fChar.email,fChar.hash,
+            FChar.rus_33_cap,FChar.period,FChar.exclamation_mark,FChar.question_mark,FChar.number,FChar.lower_quote,FChar.upper_quote,FChar.minus,
+            FChar.plus,FChar.equals,FChar.slash,FChar.open_parenthesis,FChar.close_parenthesis,FChar.semicolon,FChar.email,FChar.hash,
             });
 
-            formTranslationTables.Add(new fChar[48]
+            formTranslationTables.Add(new FChar[48]
             {
-            fChar.rus_1, fChar.rus_2,fChar.rus_3,fChar.rus_4,fChar.rus_5,fChar.rus_6,fChar.rus_7,fChar.rus_8,
-            fChar.rus_9,fChar.rus_10,fChar.rus_11,fChar.rus_12,fChar.rus_13,fChar.rus_14,fChar.rus_15,fChar.rus_16,
+            FChar.rus_1, FChar.rus_2,FChar.rus_3,FChar.rus_4,FChar.rus_5,FChar.rus_6,FChar.rus_7,FChar.rus_8,
+            FChar.rus_9,FChar.rus_10,FChar.rus_11,FChar.rus_12,FChar.rus_13,FChar.rus_14,FChar.rus_15,FChar.rus_16,
 
-            fChar.rus_17, fChar.rus_18,fChar.rus_19,fChar.rus_20,fChar.rus_21,fChar.rus_22,fChar.rus_23,fChar.rus_24,
-            fChar.rus_25,fChar.rus_26,fChar.rus_27,fChar.rus_28,fChar.rus_29,fChar.rus_30,fChar.rus_31,fChar.rus_32,
+            FChar.rus_17, FChar.rus_18,FChar.rus_19,FChar.rus_20,FChar.rus_21,FChar.rus_22,FChar.rus_23,FChar.rus_24,
+            FChar.rus_25,FChar.rus_26,FChar.rus_27,FChar.rus_28,FChar.rus_29,FChar.rus_30,FChar.rus_31,FChar.rus_32,
 
-            fChar.rus_33, fChar.dollar,fChar.ampersand,fChar.backslash,fChar.open_square_bracket,fChar.close_square_bracket,fChar.open_curly_bracket,fChar.close_curly_bracket,
-            fChar.less_than,fChar.greater_than,fChar.percent,fChar.tilde,fChar.underscore,fChar.space,fChar.space,fChar.space,
+            FChar.rus_33, FChar.dollar,FChar.ampersand,FChar.backslash,FChar.open_square_bracket,FChar.close_square_bracket,FChar.open_curly_bracket,FChar.close_curly_bracket,
+            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.space,FChar.space,FChar.space,
             });
 
             lineHeights.Add(2.0 / 3.0);
@@ -105,7 +99,7 @@ namespace Handwriting_Generator
             for (int i = 0; i < letters.Count; i++)
             {
                 //add images of a letter
-                fChar key = formTranslationTables[formType][i];
+                FChar key = formTranslationTables[formType][i];
                 if (!images.ContainsKey(key))
                     images.Add(key, new List<Bitmap>());
                 images[key].AddRange(letters[i]);
@@ -151,7 +145,7 @@ namespace Handwriting_Generator
             loopend:;
             }
             downscaled.UnlockBits(data);
-            double cmMargin = (pixelMargin * standartLetterPixelW / downscaled.Width) * standartLetterCmW / standartLetterPixelW;
+            double cmMargin = (pixelMargin * Font.imagePixelW / downscaled.Width) * Font.imageCmW / Font.imagePixelW;
             return cmMargin;
         }
 
@@ -179,13 +173,13 @@ namespace Handwriting_Generator
             loopend:;
             }
             downscaled.UnlockBits(data);
-            double cmMargin = (pixelMargin * standartLetterPixelW / downscaled.Width) * standartLetterCmW / standartLetterPixelW;
+            double cmMargin = (pixelMargin * Font.imagePixelW / downscaled.Width) * Font.imageCmW / Font.imagePixelW;
             return cmMargin;
         }
 
         private Bitmap PrepareLetterImage(Bitmap image, int formType)
         {
-            Bitmap standartImage = new Bitmap(standartLetterPixelW, standartLetterPixelH, PixelFormat.Format32bppArgb);
+            Bitmap standartImage = new Bitmap(Font.imagePixelW, Font.imagePixelH, PixelFormat.Format32bppArgb);
 
             //remove black borders
             using (Graphics gr = Graphics.FromImage(image))
@@ -201,10 +195,10 @@ namespace Handwriting_Generator
             //copy over the image
             using (Graphics gr = Graphics.FromImage(standartImage))
             {
-                int topOffset = (int)(standartLetterPixelH / 2 - standartLetterPixelW * lineHeights[formType]);
+                int topOffset = (int)(Font.imagePixelH / 2 - Font.imagePixelW * lineHeights[formType]);
 
                 gr.Clear(Color.Transparent);
-                gr.DrawImage(image, new Rectangle(0, topOffset, standartLetterPixelW, standartLetterPixelW));
+                gr.DrawImage(image, new Rectangle(0, topOffset, Font.imagePixelW, Font.imagePixelW));
             }
 
             //make white transparent

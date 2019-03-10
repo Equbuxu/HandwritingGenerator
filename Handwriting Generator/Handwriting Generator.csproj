@@ -76,7 +76,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BitmapUtils.cs" />
-    <Compile Include="fChar.cs" />
+    <Compile Include="FChar.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontCreator.cs" />
     <Compile Include="FormCutter.cs" />
