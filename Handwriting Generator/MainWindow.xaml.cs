@@ -22,38 +22,36 @@ namespace Handwriting_Generator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private void CreateFont()
+        {
+            FontCreator fontCreator = new FontCreator();
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
+            Font font = fontCreator.GetFont();
+            font.Save("DebugOut/savedFont.zip");
+        }
+
         public MainWindow()
         {
             InitializeComponent();
 
-            /*FontCreator fontCreator = new FontCreator();
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
-            Font font = fontCreator.GetFont();*/
+            //CreateFont();
             Font font = new Font("DebugOut/savedFont.zip");
-            //font.Save("DebugOut/savedFont.zip");
 
-            List<FChar> text = new List<FChar>()
+            TextConverter textConverter = new TextConverter("На днях компания Microsoft открыла исходный код калькулятора. Это приложение входило во все версии операционной системы Windows. Исходный код разных проектов Microsoft достаточно часто открывался за последние годы, но новость о калькуляторе в первый же день просочилась даже в нетехнологические средства массовой информации. Что ж, это популярная, но очень маленькая программа на языке C++, тем не менее, статический анализ кода с помощью PVS-Studio выявил подозрительные места в коде.");
+
+
+            TextRenderer renderer = new TextRenderer(textConverter.Convert(), new List<Sheet>() { Sheet.LeftLinedSheet() }, font);
+
+            int i = 0;
+            while (true)
             {
-                FChar.rus_17_cap,
-                FChar.rus_18,
-                FChar.rus_10,
-                FChar.rus_3,
-                FChar.rus_6,
-                FChar.rus_20,
-                FChar.align_center,
-                FChar.rus_1,
-                FChar.rus_2,
-                FChar.nextline,
-                FChar.rus_3,
-                FChar.align_center,
-                FChar.nextline,
-                FChar.rus_5,
-                FChar.rus_33_cap,
-            };
-
-            TextRenderer renderer = new TextRenderer(text, new List<Sheet>() { Sheet.LeftLinedSheet() }, font);
-            renderer.GetPage(0).Save("DebugOut/page.png");
+                Bitmap page = renderer.GetPage(i);
+                if (page == null)
+                    break;
+                page.Save("DebugOut/page" + i + ".png");
+                i++;
+            }
         }
     }
 }

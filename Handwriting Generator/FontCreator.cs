@@ -46,7 +46,7 @@ namespace Handwriting_Generator
             FChar.rus_25,FChar.rus_26,FChar.rus_27,FChar.rus_28,FChar.rus_29,FChar.rus_30,FChar.rus_31,FChar.rus_32,
 
             FChar.rus_33, FChar.dollar,FChar.ampersand,FChar.backslash,FChar.open_square_bracket,FChar.close_square_bracket,FChar.open_curly_bracket,FChar.close_curly_bracket,
-            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.space,FChar.space,FChar.space,
+            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.comma,FChar.space,FChar.space,
             });
 
             lineHeights.Add(2.0 / 3.0);
@@ -124,27 +124,21 @@ namespace Handwriting_Generator
         private double FindLeftMargin(Bitmap image)
         {
             Bitmap downscaled = BitmapUtils.Resize(image, 80, 80);
-            BitmapData data = downscaled.LockBits(new Rectangle(0, 0, downscaled.Width, downscaled.Height), ImageLockMode.ReadWrite, downscaled.PixelFormat);
-            int pixelMargin = -1;
-            unsafe
+            int pixelMargin = downscaled.Width - 1;
+
+            for (int i = 0; i < downscaled.Width; i++)
             {
-                byte* arr = (byte*)data.Scan0;
-                int channelCount = Bitmap.GetPixelFormatSize(downscaled.PixelFormat) / 8;
-                for (int i = 0; i < downscaled.Width; i++)
+                for (int j = 0; j < downscaled.Height; j++)
                 {
-                    for (int j = 0; j < downscaled.Height; j++)
+                    if (IsPartOfTheLetter(downscaled, i, j))
                     {
-                        int pos = j * downscaled.Width * channelCount + i * channelCount;
-                        if (BitmapUtils.GetGrayscale(arr[pos], arr[pos + 1], arr[pos + 2]) < 15 && arr[pos + 3] > 240)
-                        {
-                            pixelMargin = i;
-                            goto loopend;
-                        }
+                        pixelMargin = i;
+                        goto loopend;
                     }
                 }
-            loopend:;
             }
-            downscaled.UnlockBits(data);
+        loopend:
+            //image.SetPixel(pixelMargin * Font.imagePixelW / downscaled.Width, 220, Color.Red);
             double cmMargin = (pixelMargin * Font.imagePixelW / downscaled.Width) * Font.imageCmW / Font.imagePixelW;
             return cmMargin;
         }
@@ -152,29 +146,44 @@ namespace Handwriting_Generator
         private double FindRightMargin(Bitmap image)
         {
             Bitmap downscaled = BitmapUtils.Resize(image, 80, 80);
-            BitmapData data = downscaled.LockBits(new Rectangle(0, 0, downscaled.Width, downscaled.Height), ImageLockMode.ReadWrite, downscaled.PixelFormat);
-            int pixelMargin = -1;
-            unsafe
+            int pixelMargin = downscaled.Width - 1;
+
+            for (int i = downscaled.Width - 1; i >= 0; i--)
             {
-                byte* arr = (byte*)data.Scan0;
-                int channelCount = Bitmap.GetPixelFormatSize(downscaled.PixelFormat) / 8;
-                for (int i = downscaled.Width - 1; i >= 0; i--)
+                for (int j = 0; j < downscaled.Height; j++)
                 {
-                    for (int j = 0; j < downscaled.Height; j++)
+                    if (IsPartOfTheLetter(downscaled, i, j))
                     {
-                        int pos = j * downscaled.Width * channelCount + i * channelCount;
-                        if (BitmapUtils.GetGrayscale(arr[pos], arr[pos + 1], arr[pos + 2]) < 15 && arr[pos + 3] > 240)
-                        {
-                            pixelMargin = i;
-                            goto loopend;
-                        }
+                        pixelMargin = i;
+                        goto loopend;
                     }
                 }
-            loopend:;
             }
-            downscaled.UnlockBits(data);
+        loopend:
+            //image.SetPixel(pixelMargin * Font.imagePixelW / downscaled.Width, 220, Color.Blue);
             double cmMargin = (pixelMargin * Font.imagePixelW / downscaled.Width) * Font.imageCmW / Font.imagePixelW;
             return cmMargin;
+        }
+
+        private static bool IsPartOfTheLetter(Bitmap downscaled, int x, int y)
+        {
+            const int marginsBlackThreshold = 200;
+            const int marginsTransparentThreshold = 240;
+
+            int suit = 0;
+            for (int i = x - 1; i <= x + 1; i++)
+            {
+                for (int j = y - 1; j <= y + 1; j++)
+                {
+                    if (i < 0 || j < 0 || i >= downscaled.Width || j >= downscaled.Height)
+                        continue;
+                    Color pixel = downscaled.GetPixel(i, j);
+                    if (pixel.A > marginsBlackThreshold && BitmapUtils.GetGrayscale(pixel) < marginsBlackThreshold)
+                        suit++;
+                }
+            }
+
+            return suit > 2;
         }
 
         private Bitmap PrepareLetterImage(Bitmap image, int formType)

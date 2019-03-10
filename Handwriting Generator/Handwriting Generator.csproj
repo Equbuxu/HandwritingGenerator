@@ -65,6 +65,7 @@
     </ApplicationDefinition>
     <Compile Include="Precision.cs" />
     <Compile Include="Sheet.cs" />
+    <Compile Include="TextConverter.cs" />
     <Compile Include="TextRenderer.cs" />
     <Compile Include="Vector.cs" />
     <Page Include="MainWindow.xaml">

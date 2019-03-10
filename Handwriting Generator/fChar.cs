@@ -103,6 +103,7 @@ namespace Handwriting_Generator
         percent,
         tilde,
         underscore,
+        comma,
 
 
         //special (no image)

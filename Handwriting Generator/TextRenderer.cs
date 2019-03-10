@@ -23,7 +23,7 @@ namespace Handwriting_Generator
             public bool centered = false;
         }
 
-        private const double letterDistance = 0.1;
+        private const double letterDistance = 0;
         private const double spaceSize = 1;
         private const double tabSize = 2;
 
@@ -53,9 +53,34 @@ namespace Handwriting_Generator
             CreateSheetImages();
 
             List<Paragraph> paragraphs = SplitIntoParagraphs(text);
-            int end;
-            List<RenderUnit> renderUnits = MakeLineRenderSequence(paragraphs[0], font, random, 0, out end, (int)((notebook[0].Width - notebook[0].LeftMargin - notebook[0].RightMargin) * Font.pixelsPerCmH));
-            RenderLine(renderUnits, 0, 0);
+
+            int curSheet = 0;
+            int curLine = 0;
+            foreach (Paragraph paragraph in paragraphs)
+            {
+                int pos = 0;
+                while (pos < paragraph.text.Count)
+                {
+                    int endPos;
+                    int lineWidth = (int)((notebook[curSheet].Width - notebook[curSheet].LeftMargin - notebook[curSheet].RightMargin) * Font.pixelsPerCmH);
+                    List<RenderUnit> line = MakeLineRenderSequence(paragraph, font, random, pos, out endPos, lineWidth);
+                    pos = endPos + 1;
+
+                    RenderLine(line, curSheet, curLine);
+                    curLine++;
+
+                    int totalLines = notebook[curSheet].LineCount;
+                    if (curLine >= totalLines)
+                    {
+                        curSheet++;
+                        curLine = 0;
+                    }
+
+                    if (curSheet >= notebook.Count)
+                        goto renderend;
+                }
+            }
+        renderend:;
         }
 
         private void CreateSheetImages()
@@ -80,7 +105,8 @@ namespace Handwriting_Generator
             {
                 foreach (RenderUnit unit in line)
                 {
-                    gr.DrawImageUnscaled(unit.image, new Point(unit.x + xOff, yOff));
+                    if (unit.image != null)
+                        gr.DrawImageUnscaled(unit.image, new Point(unit.x + xOff, yOff));
                 }
             }
         }
@@ -138,6 +164,10 @@ namespace Handwriting_Generator
         /// <param name="lineWidth">in pixels</param>
         private static List<RenderUnit> MakeLineRenderSequence(Paragraph text, Font font, Random random, int startFrom, out int end, int lineWidth)
         {
+            int fullWidth = lineWidth;
+            if (text.centered)
+                lineWidth = lineWidth * 2 / 3;
+
             List<RenderUnit> generatedLine = new List<RenderUnit>();
             end = startFrom - 1;
             int x = 0;
@@ -148,12 +178,22 @@ namespace Handwriting_Generator
                 switch (character)
                 {
                     case FChar.space:
+                        if (i == startFrom)
+                            break;
                         x += (int)(spaceSize * Font.pixelsPerCmH);
+                        RenderUnit space = new RenderUnit();
+                        space.corrCharacter = FChar.space;
+                        space.image = null;
+                        generatedLine.Add(space);
                         break;
                     case FChar.tab:
                         x += (int)(tabSize * Font.pixelsPerCmH);
                         break;
                     case FChar.linebreak:
+                        RenderUnit linebreak = new RenderUnit();
+                        linebreak.corrCharacter = FChar.linebreak;
+                        linebreak.image = null;
+                        generatedLine.Add(linebreak);
                         break;
                     default:
                         InsertRenderUnit(generatedLine, character, random, x, out x, font);
@@ -170,7 +210,7 @@ namespace Handwriting_Generator
 
                         if (breakPos == -1) //proper wrapping is not possible
                         {
-                            for (int j = generatedLine.Count; j >= 0; j--)
+                            for (int j = generatedLine.Count - 1; j >= 0; j--)
                             {
                                 if (generatedLine[j].rightBorderX < lineWidth)
                                 {
@@ -181,12 +221,24 @@ namespace Handwriting_Generator
                             }
                         }
 
-                        generatedLine.RemoveRange(breakPos + 1, generatedLine.Count - breakPos);
+                        int count = generatedLine.Count - breakPos - 1;
+                        generatedLine.RemoveRange(breakPos + 1, count);
+                        end -= count;
 
                         int uselessX;
                         if (needsWrapping)
                             InsertRenderUnit(generatedLine, FChar.minus, random, generatedLine.Last().rightBorderX, out uselessX, font);
                     }
+                    break;
+                }
+            }
+
+            if (text.centered)
+            {
+                int rightDist = fullWidth - generatedLine.Last().rightBorderX;
+                foreach (RenderUnit unit in generatedLine)
+                {
+                    unit.x += rightDist / 2;
                 }
             }
 
@@ -219,11 +271,15 @@ namespace Handwriting_Generator
             for (int j = line.Count - 1; j >= 0; j--)
             {
                 if (line[j].corrCharacter == FChar.space)
+                {
                     breakPos = j - 1;
+                    break;
+                }
                 else if (line[j].corrCharacter == FChar.linebreak)
                 {
                     breakPos = j - 1;
                     needsWrapping = true;
+                    break;
                 }
             }
             return breakPos;
