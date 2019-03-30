@@ -6,3 +6,6 @@ dispose bitmaps
 make a seperate cum hist function
 move form data into a file
 findcoreregion should consider the situation where small russian characters are absent
+fix crash when \n is at the end of a text
+fix duplicate character on line break
+fix single consonant syllables at word ends

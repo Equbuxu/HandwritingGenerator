@@ -107,6 +107,8 @@ namespace Handwriting_Generator
                 {
                     if (unit.image != null)
                         gr.DrawImageUnscaled(unit.image, new Point(unit.x + xOff, yOff));
+                    if (unit.corrCharacter == FChar.linebreak)
+                        gr.FillRectangle(Brushes.Red, unit.x + xOff, yOff + (int)(Font.lineHeight * Font.pixelsPerCmH - 100), 4, 100);
                 }
             }
         }
@@ -192,6 +194,7 @@ namespace Handwriting_Generator
                     case FChar.linebreak:
                         RenderUnit linebreak = new RenderUnit();
                         linebreak.corrCharacter = FChar.linebreak;
+                        linebreak.x = x;
                         linebreak.image = null;
                         generatedLine.Add(linebreak);
                         break;
