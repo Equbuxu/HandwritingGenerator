@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,15 +28,17 @@ namespace Handwriting_Generator
             FontCreator fontCreator = new FontCreator();
             fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
             fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\2.jpg");
             Font font = fontCreator.GetFont();
             font.Save("DebugOut/savedFont.zip");
+            Console.WriteLine("done");
         }
 
         private void GenerateText()
         {
             Font font = new Font("DebugOut/savedFont.zip");
 
-            TextConverter textConverter = new TextConverter("На днях компания Microsoft открыла исходный код калькулятора. Это приложение входило во все версии операционной системы Windows. Исходный код разных проектов Microsoft достаточно часто открывался за последние годы, но новость о калькуляторе в первый же день просочилась даже в нетехнологические средства массовой информации. Что ж, это популярная, но очень маленькая программа на языке C++, тем не менее, статический анализ кода с помощью PVS-Studio выявил подозрительные места в коде.");
+            TextConverter textConverter = new TextConverter("Встретил мужика, начали сожительствовать. Не как друзья или собутыльники, а как мужчина с женщиной. Амбал покупал ему кучу всякого, курточку там какую-то купил за 30 000 руб. (а это было более 10 лет назад!) а этот противный... эта неблагодарная скотина - взял и изменил! Причем, подумать только - с кем! С женщиной!");
             TextRenderer renderer = new TextRenderer(textConverter.Convert(), new List<Sheet>() { Sheet.LeftLinedSheet() }, font);
 
             int i = 0;
@@ -47,14 +50,17 @@ namespace Handwriting_Generator
                 page.Save("DebugOut/page" + i + ".png");
                 i++;
             }
+            Console.WriteLine("done");
         }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            CreateFont();
-            //GenerateText();
+            //Thread thread = new Thread(CreateFont);
+            Thread thread = new Thread(GenerateText);
+
+            thread.Start();
         }
     }
 }

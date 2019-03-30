@@ -105,12 +105,23 @@ namespace Handwriting_Generator
         underscore,
         comma,
 
+        digit_1,
+        digit_2,
+        digit_3,
+        digit_4,
+        digit_5,
+        digit_6,
+        digit_7,
+        digit_8,
+        digit_9,
+        digit_0,
 
         //special (no image)
         space,
         nextline,
         tab,
         linebreak, //allows word wrapping
+        empty,
 
         align_center,
     }

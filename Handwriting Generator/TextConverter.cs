@@ -112,6 +112,17 @@ namespace Handwriting_Generator
             { '_', FChar.underscore},
             { ',', FChar.comma},
 
+            { '0', FChar.digit_0},
+            { '1', FChar.digit_1},
+            { '2', FChar.digit_2},
+            { '3', FChar.digit_3},
+            { '4', FChar.digit_4},
+            { '5', FChar.digit_5},
+            { '6', FChar.digit_6},
+            { '7', FChar.digit_7},
+            { '8', FChar.digit_8},
+            { '9', FChar.digit_9},
+
             { ' ', FChar.space},
             { '\n', FChar.nextline},
             { '\t', FChar.tab},
