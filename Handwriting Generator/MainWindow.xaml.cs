@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,21 +28,25 @@ namespace Handwriting_Generator
             FontCreator fontCreator = new FontCreator();
             fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
             fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\2.jpg");
             Font font = fontCreator.GetFont();
             font.Save("DebugOut/savedFont.zip");
+            Console.WriteLine("done");
         }
 
-        public MainWindow()
+        private void GenerateText()
         {
-            InitializeComponent();
-
-            //CreateFont();
             Font font = new Font("DebugOut/savedFont.zip");
 
-            TextConverter textConverter = new TextConverter("На днях компания Microsoft открыла исходный код калькулятора. Это приложение входило во все версии операционной системы Windows. Исходный код разных проектов Microsoft достаточно часто открывался за последние годы, но новость о калькуляторе в первый же день просочилась даже в нетехнологические средства массовой информации. Что ж, это популярная, но очень маленькая программа на языке C++, тем не менее, статический анализ кода с помощью PVS-Studio выявил подозрительные места в коде.");
+            TextConverter textConverter = new TextConverter(
+                "По́черк — фиксируемая в рукописи, характерная для каждого пишущего и основанная на его письменно-двигательном навыке система движений, с помощью которой выполняются условные графические знаки." +
+                "На формирование почерка огромное влияние оказывают различные факторы как субъективного, так и объективного плана.Субъективные присущи конкретной личности пишущего, а объективные зависят от внешних условий, в которых проходит процесс письма." +
+                "Исследование рукописных текстов обычно происходит в рамках криминалистического исследования документов(почерковедение).Кроме того, почерк является предметом изучения графологии, однако результаты графологических исследований не всеми признаются в качестве научного факта." +
+                "В последние годы количество текстов, написанных от руки, сокращается(люди всё чаще начинают писать на клавиатуре и распечатывать на принтерах)." +
+                "Почерк может быть «хорошим», то есть удобочитаемым, или же невнятным(даже для человека, написавшего письмо).Разборчивость почерка имеет большое значение для публикаторов рукописных материалов деятелей прошлого.В частности, хороший почерк в письмах и рукописях К.Д.Бальмонта и едва разборчивый у М.В.Добужинского."
+                );
 
-
-            TextRenderer renderer = new TextRenderer(textConverter.Convert(), new List<Sheet>() { Sheet.LeftLinedSheet() }, font);
+            TextRenderer renderer = new TextRenderer(textConverter.Convert(), new List<Sheet>() { Sheet.LeftLinedSheet(), Sheet.RightLinedSheet() }, font);
 
             int i = 0;
             while (true)
@@ -52,6 +57,17 @@ namespace Handwriting_Generator
                 page.Save("DebugOut/page" + i + ".png");
                 i++;
             }
+            Console.WriteLine("done");
+        }
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            //Thread thread = new Thread(CreateFont);
+            Thread thread = new Thread(GenerateText);
+
+            thread.Start();
         }
     }
 }

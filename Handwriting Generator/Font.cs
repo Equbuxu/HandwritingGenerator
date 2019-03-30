@@ -66,7 +66,7 @@ namespace Handwriting_Generator
                 foreach (string imagePath in imagePaths)
                 {
                     Bitmap loadedBitmap;
-                    using (Bitmap bitmap = new Bitmap(imagePath))
+                    using (Bitmap bitmap = BitmapUtils.LoadBitmap(imagePath))
                     {
                         loadedBitmap = new Bitmap(bitmap);
                     }

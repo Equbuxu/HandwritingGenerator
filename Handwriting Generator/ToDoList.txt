@@ -1,7 +1,8 @@
-﻿refactor everything to use full color (there should be no functions that assume grayscale image)
-refactor everything to use GetGrayscale
-use int instead if byte everywhere
-rewrite getminmaxmiddlecolorthreshold to use cum. hist algorith
-mind the possible exceptions
-ignore empty keys in form translation tables
-//refactor code translation tables to seperate data and logic
+﻿mind the possible exceptions
+copy instead of throwing a reference
+refactor constants
+refactor cm/pixel usage
+dispose bitmaps 
+make a seperate cum hist function
+move form data into a file
+findcoreregion should consider the situation where small russian characters are absent

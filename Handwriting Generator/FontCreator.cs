@@ -20,8 +20,43 @@ namespace Handwriting_Generator
 
         List<FChar[]> formTranslationTables = new List<FChar[]>();
         List<double> lineHeights = new List<double>(); //from the top
+        readonly int formCount = 3;
+
+        double coreRegionTop = 0;
+        double coreRegionBottom = Font.imageCmH;
 
         private const double borderCutThickness = 13.0 / 235.0;
+        private static readonly List<FChar> smallLetters = new List<FChar>()
+            {
+                FChar.rus_1,
+                FChar.rus_4,
+                FChar.rus_6,
+                FChar.rus_7,
+                FChar.rus_8,
+                FChar.rus_10,
+                FChar.rus_11,
+                FChar.rus_12,
+                FChar.rus_13,
+                FChar.rus_14,
+                FChar.rus_15,
+                FChar.rus_16,
+                FChar.rus_17,
+                FChar.rus_18,
+                FChar.rus_19,
+                FChar.rus_20,
+                FChar.rus_22,
+                FChar.rus_23,
+                FChar.rus_24,
+                FChar.rus_25,
+                FChar.rus_26,
+                FChar.rus_27,
+                FChar.rus_28,
+                FChar.rus_29,
+                FChar.rus_30,
+                FChar.rus_31,
+                FChar.rus_32,
+                FChar.rus_33,
+            };
 
         public FontCreator()
         {
@@ -46,11 +81,25 @@ namespace Handwriting_Generator
             FChar.rus_25,FChar.rus_26,FChar.rus_27,FChar.rus_28,FChar.rus_29,FChar.rus_30,FChar.rus_31,FChar.rus_32,
 
             FChar.rus_33, FChar.dollar,FChar.ampersand,FChar.backslash,FChar.open_square_bracket,FChar.close_square_bracket,FChar.open_curly_bracket,FChar.close_curly_bracket,
-            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.comma,FChar.space,FChar.space,
+            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.comma,FChar.empty,FChar.empty,
+            });
+
+            formTranslationTables.Add(new FChar[48]
+            {
+            FChar.digit_1,FChar.digit_2,FChar.digit_3,FChar.digit_4,FChar.digit_5,FChar.digit_6,FChar.digit_7, FChar.digit_8,
+            FChar.digit_9,FChar.digit_0,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,
+
+            FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,
+            FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,
+
+            FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,
+            FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,FChar.empty,
             });
 
             lineHeights.Add(2.0 / 3.0);
             lineHeights.Add(0.5);
+            lineHeights.Add(2.0 / 3.0);
+
         }
 
         /// <summary>
@@ -68,7 +117,7 @@ namespace Handwriting_Generator
             const double xOff = 10.0 / 165.0;
             const double yOff = 2.5 / 255.0;
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < formCount; i++)
             {
                 double x = (xOff + i * markerDist) * prepForm.Width;
                 double y = yOff * prepForm.Height;
@@ -100,6 +149,9 @@ namespace Handwriting_Generator
             {
                 //add images of a letter
                 FChar key = formTranslationTables[formType][i];
+                if (key == FChar.empty)
+                    continue;
+
                 if (!images.ContainsKey(key))
                     images.Add(key, new List<Bitmap>());
                 images[key].AddRange(letters[i]);
@@ -110,57 +162,125 @@ namespace Handwriting_Generator
 
                 if (!rightMargins.ContainsKey(key))
                     rightMargins.Add(key, new List<double>());
+            }
 
+            FindCoreRegion();
+
+            for (int i = 0; i < letters.Count; i++)
+            {
                 for (int j = 0; j < letters[i].Count; j++)
                 {
-                    double leftMargin = FindLeftMargin(letters[i][j]);
-                    double rightMargin = FindRightMargin(letters[i][j]);
+                    FChar key = formTranslationTables[formType][i];
+                    if (key == FChar.empty)
+                        continue;
+                    double leftMargin = FindMargin(letters[i][j], false, false);
+                    double rightMargin = FindMargin(letters[i][j], true, false);
+                    if (leftMargin == -1)
+                        leftMargin = FindMargin(letters[i][j], false, true);
+                    if (rightMargin == -1)
+                        rightMargin = FindMargin(letters[i][j], true, true);
+
                     leftMargins[key].Add(leftMargin);
                     rightMargins[key].Add(rightMargin);
                 }
             }
         }
 
-        private double FindLeftMargin(Bitmap image)
+        private void FindCoreRegion()
         {
-            Bitmap downscaled = BitmapUtils.Resize(image, 80, 80);
-            int pixelMargin = downscaled.Width - 1;
+            int[] histogram = new int[Font.imagePixelH];
 
-            for (int i = 0; i < downscaled.Width; i++)
+            foreach (FChar letter in smallLetters)
             {
-                for (int j = 0; j < downscaled.Height; j++)
+                for (int i = 0; i < images[letter].Count; i++)
+                {
+                    Bitmap image = images[letter][i];
+                    BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, image.PixelFormat);
+
+                    unsafe
+                    {
+                        byte* arr = (byte*)data.Scan0;
+                        int channelCount = Bitmap.GetPixelFormatSize(image.PixelFormat) / 8;
+
+                        for (int j = 0; j < image.Width * image.Height * channelCount; j += channelCount)
+                        {
+                            if (BitmapUtils.GetGrayscale(arr[j], arr[j + 1], arr[j + 2]) < 128 && arr[j + 3] > 240)
+                                histogram[j / channelCount / image.Width]++;
+                        }
+                    }
+
+                    image.UnlockBits(data);
+                }
+            }
+
+            int[] cumulativeHistogram = new int[Font.imagePixelH];
+            cumulativeHistogram[0] = histogram[0];
+
+            for (int i = 1; i < cumulativeHistogram.Length; i++)
+            {
+                cumulativeHistogram[i] = cumulativeHistogram[i - 1] + histogram[i];
+            }
+
+            double cutoffRatio = 0.05;
+            int total = cumulativeHistogram.Last();
+
+            int leftBorder = 0;
+            for (int i = 0; i < cumulativeHistogram.Length; i++)
+            {
+                if ((double)cumulativeHistogram[i] / total > cutoffRatio)
+                {
+                    leftBorder = i;
+                    break;
+                }
+            }
+
+            int rightBorder = cumulativeHistogram.Length;
+            for (int i = cumulativeHistogram.Length - 1; i >= 0; i--)
+            {
+                if ((double)cumulativeHistogram[i] / total < (1.0 - cutoffRatio))
+                {
+                    rightBorder = i;
+                    break;
+                }
+            }
+
+            coreRegionTop = leftBorder * Font.cmPerPixelV;
+            coreRegionBottom = rightBorder * Font.cmPerPixelV;
+
+        }
+
+        /// <summary>
+        /// Finds a left or a right margin depending on the second argument
+        /// </summary>
+        private double FindMargin(Bitmap image, bool right, bool useFullImage)
+        {
+            Bitmap downscaled = useFullImage ? BitmapUtils.Resize(image, 80, 80) : image;
+            int pixelMargin = downscaled.Width - 1;
+            bool found = false;
+
+            int iStartValue = right ? downscaled.Width - 1 : 0;
+            int increment = right ? -1 : 1;
+            int iEndValue = right ? -1 : downscaled.Width;
+
+            int jStartValue = useFullImage ? 0 : (int)(coreRegionTop * Font.pixelsPerCmV);
+            int jEndValue = useFullImage ? downscaled.Height : (int)(coreRegionBottom * Font.pixelsPerCmV);
+
+            for (int i = iStartValue; i != iEndValue; i += increment)
+            {
+                for (int j = jStartValue; j < jEndValue; j++)
                 {
                     if (IsPartOfTheLetter(downscaled, i, j))
                     {
                         pixelMargin = i;
+                        found = true;
                         goto loopend;
                     }
                 }
             }
         loopend:
             //image.SetPixel(pixelMargin * Font.imagePixelW / downscaled.Width, 220, Color.Red);
-            double cmMargin = (pixelMargin * Font.imagePixelW / downscaled.Width) * Font.imageCmW / Font.imagePixelW;
-            return cmMargin;
-        }
-
-        private double FindRightMargin(Bitmap image)
-        {
-            Bitmap downscaled = BitmapUtils.Resize(image, 80, 80);
-            int pixelMargin = downscaled.Width - 1;
-
-            for (int i = downscaled.Width - 1; i >= 0; i--)
-            {
-                for (int j = 0; j < downscaled.Height; j++)
-                {
-                    if (IsPartOfTheLetter(downscaled, i, j))
-                    {
-                        pixelMargin = i;
-                        goto loopend;
-                    }
-                }
-            }
-        loopend:
-            //image.SetPixel(pixelMargin * Font.imagePixelW / downscaled.Width, 220, Color.Blue);
+            if (!found)
+                return -1;
             double cmMargin = (pixelMargin * Font.imagePixelW / downscaled.Width) * Font.imageCmW / Font.imagePixelW;
             return cmMargin;
         }
