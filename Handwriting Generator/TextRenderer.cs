@@ -107,8 +107,8 @@ namespace Handwriting_Generator
                 {
                     if (unit.image != null)
                         gr.DrawImageUnscaled(unit.image, new Point(unit.x + xOff, yOff));
-                    if (unit.corrCharacter == FChar.linebreak)
-                        gr.FillRectangle(Brushes.Red, unit.x + xOff, yOff + (int)(Font.lineHeight * Font.pixelsPerCmH - 100), 4, 100);
+                    /*if (unit.corrCharacter == FChar.linebreak)
+                        gr.FillRectangle(Brushes.Red, unit.x + xOff, yOff + (int)(Font.lineHeight * Font.pixelsPerCmH - 100), 4, 100);*/
                 }
             }
         }

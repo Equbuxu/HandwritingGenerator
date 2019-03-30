@@ -106,6 +106,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="..\.gitignore">
+      <Link>.gitignore</Link>
+    </None>
     <None Include="..\readme.md">
       <Link>readme.md</Link>
     </None>

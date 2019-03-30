@@ -26,17 +26,17 @@ namespace Handwriting_Generator
         private void CreateFont()
         {
             FontCreator fontCreator = new FontCreator();
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0.jpg");
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1.jpg");
-            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\2.jpg");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\0o.png");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\1o.png");
+            fontCreator.Add(@"C:\Users\egor0\source\repos\Handwriting Generator\Handwriting Generator\Resources\testing\2o.png");
             Font font = fontCreator.GetFont();
-            font.Save("DebugOut/savedFont.zip");
+            font.Save("DebugOut/savedFontOleg.zip");
             Console.WriteLine("done");
         }
 
         private void GenerateText()
         {
-            Font font = new Font("DebugOut/savedFont.zip");
+            Font font = new Font("DebugOut/savedFontOleg.zip");
 
             TextConverter textConverter = new TextConverter(
                 "[center]Почерк\n" +
