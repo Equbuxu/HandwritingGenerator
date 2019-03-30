@@ -3,10 +3,12 @@ copy instead of passing a reference
 refactor constants
 refactor cm/pixel usage
 dispose bitmaps 
-make a seperate cum hist function
+make a separate cum hist function
 move form data into a file
 create debug mode (#define)
+
 fix crash on incorrect form order / findcoreregion should consider the situation where small russian characters are absent
 fix crash when \n is at the end of a text
-fix duplicate character on line break
+fix duplicate character which sometimes occur on line break
 fix single consonant syllables at word ends
+fix single letter syllables
