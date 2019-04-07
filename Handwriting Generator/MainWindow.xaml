@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Handwriting_Generator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Handwritten text generator" Height="180" Width="300">
+    <DockPanel LastChildFill="False">
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Click="OpenFontEditor">Font Creator/Editor</Button>
+        <Button DockPanel.Dock="Bottom" Margin="10" Height="50" Click="OpenTextRenderer">Handwritten text renderer</Button>
+    </DockPanel>
 </Window>

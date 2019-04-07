@@ -33,6 +33,8 @@ namespace Handwriting_Generator
 
         private void UpdateCharacterList()
         {
+            var selected = CharacterList.SelectedItem;
+
             CharacterList.Items.Clear();
 
             if (loadedFont == null)
@@ -41,6 +43,9 @@ namespace Handwriting_Generator
             {
                 CharacterList.Items.Add(item.ToString());
             }
+
+            if (selected != null)
+                CharacterList.SelectedItem = selected;
         }
 
         private void LoadHfsFile(object sender, RoutedEventArgs e)
@@ -57,20 +62,6 @@ namespace Handwriting_Generator
 
             UpdateCharacterList();
             UpdateSampleList(null, null);
-        }
-
-        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DeleteObject([In] IntPtr hObject);
-
-        public ImageSource ImageSourceForBitmap(Bitmap bmp)
-        {
-            var handle = bmp.GetHbitmap();
-            try
-            {
-                return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            }
-            finally { DeleteObject(handle); }
         }
 
         private void UpdateSampleList(object sender, SelectionChangedEventArgs e)
@@ -91,9 +82,11 @@ namespace Handwriting_Generator
                 var canvas = new Canvas();
                 canvas.Width = width;
                 canvas.Height = height;
+                int id = i;
+                canvas.MouseLeftButtonDown += (a, b) => OpenSampleSettings(selectedItem, id);
 
                 var control = new System.Windows.Controls.Image();
-                control.Source = ImageSourceForBitmap(image);
+                control.Source = BitmapUtils.ImageSourceForBitmap(image);
                 control.Width = width;
                 control.Height = height;
 
@@ -172,7 +165,7 @@ namespace Handwriting_Generator
         {
             if (loadedFont == null)
             {
-                MessageBox.Show("Nothing to save!");
+                MessageBox.Show("Nothing to export!");
                 return;
             }
 
@@ -186,6 +179,15 @@ namespace Handwriting_Generator
         private void ClearList(object sender, RoutedEventArgs e)
         {
             loadedFont = null;
+            UpdateCharacterList();
+            UpdateSampleList(null, null);
+        }
+
+        private void OpenSampleSettings(FChar character, int id)
+        {
+            SampleSettings sampleSettings = new SampleSettings(loadedFont, character, id);
+            sampleSettings.ShowDialog();
+
             UpdateCharacterList();
             UpdateSampleList(null, null);
         }

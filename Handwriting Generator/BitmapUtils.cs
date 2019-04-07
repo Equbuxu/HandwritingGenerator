@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,20 @@ namespace Handwriting_Generator
 {
     static class BitmapUtils
     {
+        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteObject([In] IntPtr hObject);
+
+        public static System.Windows.Media.ImageSource ImageSourceForBitmap(Bitmap bmp)
+        {
+            var handle = bmp.GetHbitmap();
+            try
+            {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, System.Windows.Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            }
+            finally { DeleteObject(handle); }
+        }
+
         public static Bitmap LoadBitmap(string path)
         {
             Bitmap bitmap = new Bitmap(path);
