@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -26,6 +27,8 @@ namespace Handwriting_Generator
 
         public static Bitmap MakeGrayscale(Bitmap bitmap)
         {
+            Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
+
             Bitmap newBitmap = new Bitmap(bitmap.Width, bitmap.Height, bitmap.PixelFormat);
             BitmapData pixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
             BitmapData newPixels = newBitmap.LockBits(new Rectangle(0, 0, newBitmap.Width, newBitmap.Height), ImageLockMode.ReadWrite, newBitmap.PixelFormat);
@@ -53,6 +56,8 @@ namespace Handwriting_Generator
         /// </summary>
         public static Bitmap Resize(Bitmap orig, int w, int h)
         {
+            Debug.Assert(orig.PixelFormat == PixelFormat.Format32bppArgb);
+
             Bitmap result = new Bitmap(w, h);
             Graphics graphics = Graphics.FromImage(result);
             graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
@@ -71,6 +76,7 @@ namespace Handwriting_Generator
         {
             //Generate histograms
             //bitmap = MakeGrayscale(bitmap);
+            Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
             Bitmap downscaledBitmap = new Bitmap(bitmap, new Size(80, 120));
 
 
@@ -151,6 +157,8 @@ namespace Handwriting_Generator
         /// </summary>
         public static void ChangeBrightness(Bitmap bitmap, double brightness)
         {
+            Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
+
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
 
             unsafe
@@ -223,6 +231,8 @@ namespace Handwriting_Generator
         /// </summary>
         public static int GetMinMaxMiddleColorThreshold(Bitmap bitmap, double cutoffRatio = 0.001)
         {
+            Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
+
             int[] histogram = new int[256];
 
             BitmapData pixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
@@ -277,6 +287,8 @@ namespace Handwriting_Generator
         /// </summary>
         public static Bitmap MakeBlackAndWhite(Bitmap bitmap, int threshold)
         {
+            Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
+
             Bitmap newBitmap = new Bitmap(bitmap.Width, bitmap.Height, bitmap.PixelFormat);
             BitmapData pixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
             BitmapData newPixels = newBitmap.LockBits(new Rectangle(0, 0, newBitmap.Width, newBitmap.Height), ImageLockMode.ReadWrite, newBitmap.PixelFormat);

@@ -1,0 +1,42 @@
+﻿<Window x:Class="Handwriting_Generator.FontEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Handwriting_Generator"
+        mc:Ignorable="d"
+        Title="FontEditor" Height="550" Width="1000">
+    <DockPanel>
+        <Border BorderThickness="1" BorderBrush="Gray" Margin="3">
+            <StackPanel DockPanel.Dock="Left" Width="150">
+                <Label>Add samples</Label>
+                <TextBlock TextWrapping="Wrap" Margin="5">These will freeze the window until the operation is completed. Sorry for that. WIP.</TextBlock>
+                <Button Grid.Column="0" Grid.Row="0" Margin="5" Height="25" Click="LoadHfsFile">From .hfs file</Button>
+                <Button Grid.Column="0" Grid.Row="0" Margin="5" Height="25" Click="LoadFormImage">From form image</Button>
+                <Label>Actions</Label>
+                <Button Grid.Column="0" Grid.Row="0" Margin="5" Height="25" Click="Autoalign">Autocalculate borders</Button>
+                <Button Grid.Column="0" Grid.Row="0" Margin="5" Height="25" Click="ClearList">Delete all characters</Button>
+                <Label>Export</Label>
+                <Button Grid.Column="0" Grid.Row="0" Margin="5" Height="25" Click="SaveHfs">Export .hfs</Button>
+            </StackPanel>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="Gray" Margin="3">
+            <DockPanel LastChildFill="True" Margin="5">
+                <Border DockPanel.Dock="Right" Margin="5" Width="640" BorderThickness="1" BorderBrush="Gray">
+                    <WrapPanel Margin="5" Name="SampleList">
+                        <Canvas Width="100" Height="100" Margin="5">
+                            <Image Source="https://a.ppy.sh/9704702?1537235660.jpeg"  Width="100" Height="100"></Image>
+                            <Rectangle Fill="Transparent" Stroke="Red" StrokeThickness="2" Width="20" Height="100" Canvas.Left="20"></Rectangle>
+                        </Canvas>
+                        <Image Source="https://a.ppy.sh/13773626?1547643728.jpeg" Width="100" Height="100" Margin="5"></Image>
+                        <Image Source="https://a.ppy.sh/11018770?1539405570.jpeg" Width="100" Height="100" Margin="5"></Image>
+                    </WrapPanel>
+                </Border>
+                <Label DockPanel.Dock="Top">Characters</Label>
+                <ListBox Name="CharacterList" SelectionChanged="UpdateSampleList"/>
+
+
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</Window>

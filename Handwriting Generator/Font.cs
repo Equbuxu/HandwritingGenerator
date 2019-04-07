@@ -44,6 +44,54 @@ namespace Handwriting_Generator
             Load(path);
         }
 
+        public void AddFromOther(Font other)
+        {
+            foreach (KeyValuePair<FChar, List<Bitmap>> item in other.images)
+            {
+                if (images.ContainsKey(item.Key))
+                {
+                    foreach (Bitmap image in item.Value)
+                    {
+                        images[item.Key].Add(image);
+                    }
+                }
+                else
+                {
+                    images.Add(item.Key, item.Value);
+                }
+            }
+
+            foreach (KeyValuePair<FChar, List<double>> item in other.leftMargins)
+            {
+                if (leftMargins.ContainsKey(item.Key))
+                {
+                    foreach (double value in item.Value)
+                    {
+                        leftMargins[item.Key].Add(value);
+                    }
+                }
+                else
+                {
+                    leftMargins.Add(item.Key, item.Value);
+                }
+            }
+
+            foreach (KeyValuePair<FChar, List<double>> item in other.rightMargins)
+            {
+                if (rightMargins.ContainsKey(item.Key))
+                {
+                    foreach (double value in item.Value)
+                    {
+                        rightMargins[item.Key].Add(value);
+                    }
+                }
+                else
+                {
+                    rightMargins.Add(item.Key, item.Value);
+                }
+            }
+        }
+
         private void Load(string path)
         {
             //Create temp directory
@@ -104,8 +152,6 @@ namespace Handwriting_Generator
 
         public void Save(string path)
         {
-
-
             //Make temp directory
             if (Directory.Exists("TempFontStorage"))
                 Directory.Delete("TempFontStorage", true);

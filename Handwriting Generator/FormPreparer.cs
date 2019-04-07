@@ -39,6 +39,7 @@ namespace Handwriting_Generator
             List<Vector> preciseMarkers = PrecisifyMarkers(impreciseMarkers);
             List<Vector> identifiedMarkers = IdentifyMarkers(preciseMarkers);
             List<Vector> fullyRescaledMarkers = identifiedMarkers.Select((a) => a * (originalForm.Width / (double)largeImageWidth)).ToList();
+
             Bitmap fixedOrientationForm = RotateCrop(fullyRescaledMarkers, originalForm);
 
             //get rid of lines. The value has been found exprementally
@@ -94,6 +95,9 @@ namespace Handwriting_Generator
                 }
             }
 
+            if (maxVectPair.Count != 2 || minVectPair.Count != 2)
+                throw new MarkersNotFoundException("Couldn't indentify markers. This will probably never happen but I'll leave this check anyway just in case.");
+
             Vector topright = minVectPair.Intersect(maxVectPair).First();
             minVectPair.Remove(topright);
             Vector topleft = minVectPair.First();
@@ -125,6 +129,8 @@ namespace Handwriting_Generator
                 TraverseConnectedComponentDFS(connComponentPoints, largeForm, visited, (int)impreciseMarker.X, (int)impreciseMarker.Y, BWThreshold);
                 double totalX = 0, totalY = 0;
                 connComponentPoints.ForEach((a) => { totalX += a.X; totalY += a.Y; });
+                if (connComponentPoints.Count == 0)
+                    throw new MarkersNotFoundException("Couldn't find precise positions of markers");
                 precisifiedMarkers.Add(new Vector(totalX / connComponentPoints.Count, totalY / connComponentPoints.Count));
             }
 
@@ -184,7 +190,7 @@ namespace Handwriting_Generator
             blackAreas.Sort((a, b) => b.Count - a.Count);
 
             if (blackAreas.Count < markerCount)
-                return null;
+                throw new MarkersNotFoundException("Could't find markers on image");
 
             //Find their centers
             List<Vector> squareCenters = new List<Vector>();
@@ -260,6 +266,10 @@ namespace Handwriting_Generator
             if (x < 0 || x >= map.Width || y < 0 || y >= map.Height || IsVisited(visited, x, y) || !BitmapUtils.IsBelowThreshold(map, x, y, threshold))
                 return;
             result.Add(new Vector(x, y));
+
+            if (result.Count > 2000)
+                throw new MarkersNotFoundException("Couldn't traverse one of the markers: for some reason it is too large.");
+
             visited.SetPixel(x, y, Color.Red);
 
             TraverseConnectedComponentDFS(result, map, visited, x + 1, y, threshold);

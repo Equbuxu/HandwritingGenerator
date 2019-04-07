@@ -63,11 +63,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="FontAligner.cs" />
+    <Compile Include="FontEditor.xaml.cs">
+      <DependentUpon>FontEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Precision.cs" />
     <Compile Include="Sheet.cs" />
     <Compile Include="TextConverter.cs" />
     <Compile Include="TextRenderer.cs" />
     <Compile Include="Vector.cs" />
+    <Page Include="FontEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -66,9 +66,12 @@ namespace Handwriting_Generator
             InitializeComponent();
 
             //Thread thread = new Thread(CreateFont);
-            Thread thread = new Thread(GenerateText);
+            //Thread thread = new Thread(GenerateText);
 
-            thread.Start();
+            //thread.Start();
+            FontEditor window = new FontEditor();
+            window.Show();
+
         }
     }
 }
