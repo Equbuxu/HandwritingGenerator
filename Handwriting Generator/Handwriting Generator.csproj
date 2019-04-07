@@ -75,6 +75,9 @@
     <Compile Include="Sheet.cs" />
     <Compile Include="TextConverter.cs" />
     <Compile Include="TextRenderer.cs" />
+    <Compile Include="TextRenderingWindow.xaml.cs">
+      <DependentUpon>TextRenderingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vector.cs" />
     <Page Include="FontEditor.xaml">
       <SubType>Designer</SubType>
@@ -99,6 +102,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="SampleSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TextRenderingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

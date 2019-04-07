@@ -79,7 +79,8 @@ namespace Handwriting_Generator
 
         private void OpenTextRenderer(object sender, RoutedEventArgs e)
         {
-
+            TextRenderingWindow window = new TextRenderingWindow();
+            window.ShowDialog();
         }
     }
 }
