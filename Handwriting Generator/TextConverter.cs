@@ -8,12 +8,19 @@ namespace Handwriting_Generator
 {
     public class TextConverter
     {
-        private string origText;
+        private class TranslationUnit
+        {
+            //Either original text or translated text should contain only one character
+            public string originalText;
+            public FChar translatedText;
+        }
+
         private bool converted = false;
 
-        public List<FChar> result = new List<FChar>();
+        private string origText;
+        private List<FChar> convertedText = new List<FChar>();
 
-        private static Dictionary<char, FChar> conversionTable = new Dictionary<char, FChar>()
+        private static Dictionary<char, FChar> translationTable = new Dictionary<char, FChar>()
         {
             { '\x0410', FChar.rus_1_cap},
             { '\x0411', FChar.rus_2_cap},
@@ -90,6 +97,7 @@ namespace Handwriting_Generator
             //{ '', FChar.lower_quote},
             { '"', FChar.upper_quote},
             { '-', FChar.minus},
+            { '—', FChar.minus},
             { '+', FChar.plus},
             { '=', FChar.equals},
             { '/', FChar.slash},
@@ -128,6 +136,92 @@ namespace Handwriting_Generator
             { '\t', FChar.tab},
         };
 
+        private static List<FChar> vowels = new List<FChar>()
+        {
+            // а, о, э, и, у, ы, е, ё, ю, я.
+            FChar.rus_1,
+            FChar.rus_16,
+            FChar.rus_31,
+            FChar.rus_10,
+            FChar.rus_21,
+            FChar.rus_29,
+            FChar.rus_6,
+            FChar.rus_7,
+            FChar.rus_32,
+            FChar.rus_33,
+
+            FChar.rus_1_cap,
+            FChar.rus_16_cap,
+            FChar.rus_31_cap,
+            FChar.rus_10_cap,
+            FChar.rus_21_cap,
+            FChar.rus_29_cap,
+            FChar.rus_6_cap,
+            FChar.rus_7_cap,
+            FChar.rus_32_cap,
+            FChar.rus_33_cap,
+        };
+
+        private static List<FChar> soundCharacters = new List<FChar>()
+        {
+            // ъ,ь,й
+            FChar.rus_30,
+            FChar.rus_28,
+            FChar.rus_11,
+
+            FChar.rus_30_cap,
+            FChar.rus_28_cap,
+            FChar.rus_11_cap,
+        };
+
+        private static List<FChar> consonants = new List<FChar>()
+        {
+            // Б, В, Г, Д, Ж, З, Й, К, Л, М, Н, П, Р, С, Т, Ф, Х, Ц, Ч, Ш, Щ
+            FChar.rus_2,
+            FChar.rus_3,
+            FChar.rus_4,
+            FChar.rus_5,
+            FChar.rus_8,
+            FChar.rus_9,
+            FChar.rus_11,
+            FChar.rus_12,
+            FChar.rus_13,
+            FChar.rus_14,
+            FChar.rus_15,
+            FChar.rus_17,
+            FChar.rus_18,
+            FChar.rus_19,
+            FChar.rus_20,
+            FChar.rus_22,
+            FChar.rus_23,
+            FChar.rus_24,
+            FChar.rus_25,
+            FChar.rus_26,
+            FChar.rus_27,
+
+            FChar.rus_2_cap,
+            FChar.rus_3_cap,
+            FChar.rus_4_cap,
+            FChar.rus_5_cap,
+            FChar.rus_8_cap,
+            FChar.rus_9_cap,
+            FChar.rus_11_cap,
+            FChar.rus_12_cap,
+            FChar.rus_13_cap,
+            FChar.rus_14_cap,
+            FChar.rus_15_cap,
+            FChar.rus_17_cap,
+            FChar.rus_18_cap,
+            FChar.rus_19_cap,
+            FChar.rus_20_cap,
+            FChar.rus_22_cap,
+            FChar.rus_23_cap,
+            FChar.rus_24_cap,
+            FChar.rus_25_cap,
+            FChar.rus_26_cap,
+            FChar.rus_27_cap,
+        };
+
         public TextConverter(string text)
         {
             origText = text;
@@ -136,21 +230,94 @@ namespace Handwriting_Generator
         public List<FChar> Convert()
         {
             if (converted)
-                return result;
+                return convertedText;
             converted = true;
 
+            TranslateToFChar();
+            PairQuotes();
+            SeparateSyllables();
+
+            return convertedText;
+        }
+
+        private void SeparateSyllables()
+        {
+            bool pendingLineBreak = false;
+            for (int i = 0; i < convertedText.Count; i++)
+            {
+                if (!vowels.Contains(convertedText[i]) && !consonants.Contains(convertedText[i]) && !soundCharacters.Contains(convertedText[i]))
+                {
+                    pendingLineBreak = false;
+                    continue;
+                }
+
+                if (pendingLineBreak && !soundCharacters.Contains(convertedText[i]))
+                {
+                    pendingLineBreak = false;
+                    convertedText.Insert(i, FChar.linebreak);
+                    i++;
+                }
+
+                if (vowels.Contains(convertedText[i]))
+                    pendingLineBreak = true;
+            }
+        }
+
+        private void PairQuotes()
+        {
+            bool insideQuotes = false;
+
+            for (int i = 0; i < convertedText.Count; i++)
+            {
+                if (convertedText[i] == FChar.upper_quote)
+                {
+                    insideQuotes = !insideQuotes;
+                    if (!insideQuotes)
+                        convertedText[i] = FChar.lower_quote;
+                }
+            }
+        }
+
+        private void TranslateToFChar()
+        {
             for (int i = 0; i < origText.Length; i++)
             {
-                result.Add(ConvertToFChar(origText[i]));
-            }
+                //Test if it's a tag
+                int skip;
+                FChar tag = ConvertToTag(i, out skip);
+                if (tag != FChar.empty)
+                {
+                    i += skip - 1;
+                    convertedText.Add(tag);
+                    continue;
+                }
 
-            return result;
+                //Translate as a regular character
+                convertedText.Add(ConvertToFChar(origText[i]));
+            }
+        }
+
+        private FChar ConvertToTag(int pos, out int skip)
+        {
+            string tag = "[center]";
+            bool isTag = true;
+
+            for (int i = 0; i < tag.Length; i++)
+            {
+                if (origText[pos + i] != tag[i])
+                {
+                    isTag = false;
+                    break;
+                }
+            }
+            skip = isTag ? tag.Length : 0;
+            return isTag ? FChar.align_center : FChar.empty;
         }
 
         private FChar ConvertToFChar(char character)
         {
-            if (conversionTable.ContainsKey(character))
-                return conversionTable[character];
+            if (translationTable.ContainsKey(character))
+                return translationTable[character];
             return FChar.space;
         }
     }

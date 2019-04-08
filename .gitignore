@@ -28,6 +28,7 @@ bld/
 [Ll]og/
 DebugOut/
 TempFontStorage/
+Handwriting Generator/Resources/testing/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

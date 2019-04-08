@@ -107,6 +107,8 @@ namespace Handwriting_Generator
                 {
                     if (unit.image != null)
                         gr.DrawImageUnscaled(unit.image, new Point(unit.x + xOff, yOff));
+                    /*if (unit.corrCharacter == FChar.linebreak)
+                        gr.FillRectangle(Brushes.Red, unit.x + xOff, yOff + (int)(Font.lineHeight * Font.pixelsPerCmH - 100), 4, 100);*/
                 }
             }
         }
@@ -180,10 +182,12 @@ namespace Handwriting_Generator
                     case FChar.space:
                         if (i == startFrom)
                             break;
-                        x += (int)(spaceSize * Font.pixelsPerCmH);
                         RenderUnit space = new RenderUnit();
                         space.corrCharacter = FChar.space;
                         space.image = null;
+                        space.x = x;
+                        x += (int)(spaceSize * Font.pixelsPerCmH);
+                        space.rightBorderX = x;
                         generatedLine.Add(space);
                         break;
                     case FChar.tab:
@@ -192,6 +196,7 @@ namespace Handwriting_Generator
                     case FChar.linebreak:
                         RenderUnit linebreak = new RenderUnit();
                         linebreak.corrCharacter = FChar.linebreak;
+                        linebreak.x = x;
                         linebreak.image = null;
                         generatedLine.Add(linebreak);
                         break;
@@ -293,6 +298,12 @@ namespace Handwriting_Generator
             if (number < 0)
                 return null;
             return renderedText[number];
+        }
+
+        public int GetPageCount()
+        {
+            Render();
+            return renderedText.Count;
         }
     }
 }
