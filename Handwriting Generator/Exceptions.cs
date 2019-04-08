@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Handwriting_Generator
 {
+    public class FontLoadingException : Exception
+    {
+        public FontLoadingException() { }
+        public FontLoadingException(string message) : base(message) { }
+        public FontLoadingException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
     public class FormException : Exception
     {
         public FormException() { }

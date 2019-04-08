@@ -182,10 +182,12 @@ namespace Handwriting_Generator
                     case FChar.space:
                         if (i == startFrom)
                             break;
-                        x += (int)(spaceSize * Font.pixelsPerCmH);
                         RenderUnit space = new RenderUnit();
                         space.corrCharacter = FChar.space;
                         space.image = null;
+                        space.x = x;
+                        x += (int)(spaceSize * Font.pixelsPerCmH);
+                        space.rightBorderX = x;
                         generatedLine.Add(space);
                         break;
                     case FChar.tab:
@@ -296,6 +298,12 @@ namespace Handwriting_Generator
             if (number < 0)
                 return null;
             return renderedText[number];
+        }
+
+        public int GetPageCount()
+        {
+            Render();
+            return renderedText.Count;
         }
     }
 }

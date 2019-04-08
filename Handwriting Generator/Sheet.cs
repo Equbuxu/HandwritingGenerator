@@ -17,6 +17,20 @@ namespace Handwriting_Generator
         public double DistBetweenLines { get; set; }
         public int LineCount { get; set; }
 
+        public Sheet Copy()
+        {
+            return new Sheet()
+            {
+                Width = Width,
+                Height = Height,
+                LeftMargin = LeftMargin,
+                RightMargin = RightMargin,
+                FirstLineHeight = FirstLineHeight,
+                DistBetweenLines = DistBetweenLines,
+                LineCount = LineCount,
+            };
+        }
+
         public static Sheet LeftLinedSheet()
         {
             Sheet sheet = new Sheet()
@@ -73,6 +87,21 @@ namespace Handwriting_Generator
                 FirstLineHeight = 0.9,
                 DistBetweenLines = 0.497435897,
                 LineCount = 38,
+            };
+            return sheet;
+        }
+
+        public static Sheet A4Sheet()
+        {
+            Sheet sheet = new Sheet()
+            {
+                Width = 21.0,
+                Height = 29.7,
+                LeftMargin = 1.0,
+                RightMargin = 1.0,
+                FirstLineHeight = 1.5,
+                DistBetweenLines = 0.8,
+                LineCount = 36,
             };
             return sheet;
         }

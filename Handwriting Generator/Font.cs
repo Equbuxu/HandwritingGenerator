@@ -101,7 +101,14 @@ namespace Handwriting_Generator
             Directory.CreateDirectory("TempFontStorage");
 
             //Extract zip
-            ZipFile.ExtractToDirectory(path, "TempFontStorage");
+            try
+            {
+                ZipFile.ExtractToDirectory(path, "TempFontStorage");
+            }
+            catch (InvalidDataException e)
+            {
+                throw new FontLoadingException("Couldn't unpack zip", e);
+            }
 
             //Load images
             string[] folders = Directory.GetDirectories("TempFontStorage");
