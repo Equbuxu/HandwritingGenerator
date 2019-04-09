@@ -48,7 +48,7 @@ namespace Handwriting_Generator
             FChar.rus_25,FChar.rus_26,FChar.rus_27,FChar.rus_28,FChar.rus_29,FChar.rus_30,FChar.rus_31,FChar.rus_32,
 
             FChar.rus_33, FChar.dollar,FChar.ampersand,FChar.backslash,FChar.open_square_bracket,FChar.close_square_bracket,FChar.open_curly_bracket,FChar.close_curly_bracket,
-            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.comma,FChar.empty,FChar.empty,
+            FChar.less_than,FChar.greater_than,FChar.percent,FChar.tilde,FChar.underscore,FChar.comma,FChar.colon,FChar.empty,
             });
 
             formTranslationTables.Add(new FChar[48]

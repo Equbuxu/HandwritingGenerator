@@ -44,11 +44,9 @@ namespace Handwriting_Generator
 
             //get rid of lines. The value has been found exprementally
             BitmapUtils.ChangeBrightness(fixedOrientationForm, 1.1);
-            fixedOrientationForm.Save("DebugOut/brightness.png");
             //fix under/overexposed images
             BitmapUtils.Autocontrast(fixedOrientationForm);
             Bitmap final = BitmapUtils.MakeGrayscale(fixedOrientationForm);
-            final.Save("DebugOut/final.png");
             result = final;
 
             return final;
@@ -227,9 +225,7 @@ namespace Handwriting_Generator
         private void CreateSmallExpandedBW(Bitmap smallForm)
         {
             smallBWForm = BitmapUtils.MakeBlackAndWhite(smallForm, BWThreshold);
-            smallBWForm.Save("DebugOut/blackwhite.png");
             smallBWForm = BitmapUtils.ExpandWhite(smallBWForm);
-            smallBWForm.Save("DebugOut/Expanded.png");
         }
 
         /// <summary>

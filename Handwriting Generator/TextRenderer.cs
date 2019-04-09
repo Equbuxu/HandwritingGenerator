@@ -146,6 +146,9 @@ namespace Handwriting_Generator
                     paragraph.centered = true;
 
                 startPos++;
+
+                if (startPos >= text.Count)
+                    break;
             }
             endPos = startPos - 1;
             for (int i = startPos; i < text.Count; i++)
@@ -208,6 +211,7 @@ namespace Handwriting_Generator
 
                 if (generatedLine.Count > 0 && generatedLine.Last().rightBorderX >= lineWidth)
                 {
+                    bool notFirstIteration = false;
                     while (generatedLine.Last().rightBorderX >= lineWidth)
                     {
                         bool needsWrapping;
@@ -229,16 +233,21 @@ namespace Handwriting_Generator
                         int count = generatedLine.Count - breakPos - 1;
                         generatedLine.RemoveRange(breakPos + 1, count);
                         end -= count;
+                        if (notFirstIteration && needsWrapping)
+                        {
+                            end++;//compensate for prev. inserted minus
+                        }
 
                         int uselessX;
                         if (needsWrapping)
                             InsertRenderUnit(generatedLine, FChar.minus, random, generatedLine.Last().rightBorderX, out uselessX, font);
+                        notFirstIteration = true;
                     }
                     break;
                 }
             }
 
-            if (text.centered)
+            if (text.centered && generatedLine.Count > 0)
             {
                 int rightDist = fullWidth - generatedLine.Last().rightBorderX;
                 foreach (RenderUnit unit in generatedLine)
@@ -253,6 +262,18 @@ namespace Handwriting_Generator
         private static void InsertRenderUnit(List<RenderUnit> list, FChar character, Random random, int x, out int newX, Font font)
         {
             RenderUnit unit = new RenderUnit();
+
+            if (!font.images.ContainsKey(character))
+            {
+                unit.x = x;
+                unit.image = null;
+                unit.corrCharacter = character;
+                unit.rightBorderX = unit.x + (int)(0.3 * Font.pixelsPerCmH);
+                list.Add(unit);
+
+                newX = x + (int)(0.3 * Font.pixelsPerCmV);
+                return;
+            }
 
             int selectedImageIndex = random.Next(font.images[character].Count());
 

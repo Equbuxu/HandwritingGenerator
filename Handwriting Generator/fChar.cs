@@ -88,6 +88,7 @@ namespace Handwriting_Generator
         slash,
         open_parenthesis,
         close_parenthesis,
+        colon,
         semicolon,
         email,
         hash,
