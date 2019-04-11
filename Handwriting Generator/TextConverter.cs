@@ -8,13 +8,6 @@ namespace Handwriting_Generator
 {
     public class TextConverter
     {
-        private class TranslationUnit
-        {
-            //Either original text or translated text should contain only one character
-            public string originalText;
-            public FChar translatedText;
-        }
-
         private bool converted = false;
 
         private string origText;
@@ -104,6 +97,7 @@ namespace Handwriting_Generator
             { '(', FChar.open_parenthesis},
             { ')', FChar.close_parenthesis},
             { ';', FChar.semicolon},
+            { ':', FChar.colon},
             { '@', FChar.email},
             { '#', FChar.hash},
             { '$', FChar.dollar},

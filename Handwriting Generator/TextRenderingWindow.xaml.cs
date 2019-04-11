@@ -145,7 +145,7 @@ namespace Handwriting_Generator
             string text = TextToRender.Text;
             TextConverter textConverter = new TextConverter(text);
             renderer = new TextRenderer(textConverter.Convert(), sheets, selectedFont);
-
+            curPreviewPage = 0;
             UpdatePreview();
         }
 

@@ -115,7 +115,7 @@ namespace Handwriting_Generator
 
             foreach (string folder in folders)
             {
-                FChar key = (FChar)int.Parse(Path.GetFileName(folder));
+                FChar key = (FChar)Enum.Parse(typeof(FChar), Path.GetFileName(folder));
                 List<Bitmap> value = new List<Bitmap>();
                 string[] imagePaths = Directory.GetFiles(folder);
                 foreach (string imagePath in imagePaths)
@@ -169,10 +169,10 @@ namespace Handwriting_Generator
             foreach (KeyValuePair<FChar, List<Bitmap>> bitmaps in images)
             {
                 int i = 0;
-                Directory.CreateDirectory("TempFontStorage/" + (int)bitmaps.Key);
+                Directory.CreateDirectory("TempFontStorage/" + bitmaps.Key.ToString());
                 foreach (Bitmap image in bitmaps.Value)
                 {
-                    image.Save("TempFontStorage/" + (int)bitmaps.Key + "/" + i.ToString() + ".png");
+                    image.Save("TempFontStorage/" + bitmaps.Key.ToString() + "/" + i.ToString() + ".png");
                     i++;
                 }
             }
