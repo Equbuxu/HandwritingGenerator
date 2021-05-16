@@ -40,6 +40,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.31\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -69,6 +72,9 @@
     <Compile Include="FontEditor.xaml.cs">
       <DependentUpon>FontEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\BitmapEx.cs" />
+    <Compile Include="UI\BindCharacter.cs" />
+    <Compile Include="UI\BindSample.cs" />
     <Compile Include="Precision.cs" />
     <Compile Include="SampleSettings.xaml.cs">
       <DependentUpon>SampleSettings.xaml</DependentUpon>
@@ -79,6 +85,12 @@
     <Compile Include="TextRenderingWindow.xaml.cs">
       <DependentUpon>TextRenderingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\CommandHandler.cs" />
+    <Compile Include="UI\Converters\VisibilityToNullConverter.cs" />
+    <Compile Include="UI\FontEditor.xaml.cs">
+      <DependentUpon>FontEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FontEditorViewModel.cs" />
     <Compile Include="Vector.cs" />
     <Page Include="FontEditor.xaml">
       <SubType>Designer</SubType>
@@ -110,6 +122,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\FontEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MathUtils.cs" />
@@ -136,6 +152,7 @@
     <None Include="..\readme.md">
       <Link>readme.md</Link>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -146,6 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ToDoList.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
